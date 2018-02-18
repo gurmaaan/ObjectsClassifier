@@ -1,0 +1,31 @@
+<RCC>
+    <qresource prefix="/">
+        <file>favicon.ico</file>
+        <file>iconsource.rc</file>
+        <file>icons/about_ic.png</file>
+        <file>icons/add_param_ic.png</file>
+        <file>icons/apply_filter_chenges_ic.png</file>
+        <file>icons/change_filter_color_ic.png</file>
+        <file>icons/change_param_ic.png</file>
+        <file>icons/close_all_ic.png</file>
+        <file>icons/close_image_ic.png</file>
+        <file>icons/create_filter_ic.png</file>
+        <file>icons/delete_groups_object_ic.png</file>
+        <file>icons/delete_param_ic.png</file>
+        <file>icons/exchenge_groups_objects_ic.png</file>
+        <file>icons/exit_ic.png</file>
+        <file>icons/favicon.png</file>
+        <file>icons/full_screen_ic.png</file>
+        <file>icons/open_image_ic.png</file>
+        <file>icons/remove_filter_ic.png</file>
+        <file>icons/rename_filter_ic.png</file>
+        <file>icons/restart_ic.png</file>
+        <file>icons/save_filter_ic.png</file>
+        <file>icons/save_groups_objects_ic.png</file>
+        <file>icons/save_image_as_ic.png</file>
+        <file>icons/save_separation_ic.png</file>
+        <file>icons/settings_ic.png</file>
+        <file>icons/view_groups_objects_ic.png</file>
+        <file>icons/open_dataFile_ic.png</file>
+    </qresource>
+</RCC>
