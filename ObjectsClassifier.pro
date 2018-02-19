@@ -26,11 +26,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    external/qcustomplot.cpp
+    external/qcustomplot.cpp \
+    obj.cpp \
+    datamodel.cpp
 
 HEADERS += \
         mainwindow.h \
-    external/qcustomplot.h
+    external/qcustomplot.h \
+    obj.h \
+    datamodel.h
 
 RESOURCES += \
         sources.qrc

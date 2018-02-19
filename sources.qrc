@@ -27,5 +27,7 @@
         <file>icons/settings_ic.png</file>
         <file>icons/view_groups_objects_ic.png</file>
         <file>icons/open_dataFile_ic.png</file>
+        <file>icons/zoomInIcon.png</file>
+        <file>icons/zoomOutIcon.png</file>
     </qresource>
 </RCC>
