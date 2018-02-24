@@ -22,8 +22,6 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void updateViewer(const QPixmap &image, bool aspectRatio);
-
-
     void resizeEvent(QResizeEvent *event);
 
 private slots:

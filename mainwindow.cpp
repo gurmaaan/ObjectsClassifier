@@ -3,8 +3,12 @@
 #include <QAbstractSlider>
 #include <QResizeEvent>
 
-#ifndef EXTRA_PATH
-#define EXTRA_PATH QString("ObjectsClassifier/images")
+#ifndef EXTRA_PIC_PATH
+#define EXTRA_PIC_PATH QString("ObjectsClassifier/images")
+#endif
+
+#ifndef EXTRA_DAT_PATH
+#define EXTRA_DAT_PATH QString("ObjectsClassifier/data")
 #endif
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -17,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
     scene = new QGraphicsScene();
     viewer->setScene(scene);
 
-    connect(model, SIGNAL(pathLoaded(QString)), ui->img_path_lineEdit, SLOT(setText(QString)));
+    connect(model, SIGNAL(pathImgLoaded(QString)), ui->img_path_lineEdit, SLOT(setText(QString)));
 }
 
 MainWindow::~MainWindow()
@@ -71,6 +75,35 @@ void MainWindow::on_openDataAct_triggered(bool checked)
 {
     if (ui->openDataAct->isChecked())
         ui->openDataBut->setChecked(checked);
+
+    QDir dir = QDir::current();
+    dir.cdUp();
+
+    dir.cd(EXTRA_DAT_PATH);
+    QString path = (dir.exists()) ?  dir.absolutePath() : QString(QStandardPaths::DocumentsLocation);
+
+    if(dir.exists())
+    {
+        QString fileName = QFileDialog::getOpenFileName(this, tr("Select data file"), path, "DAT(*.dat)");
+         if (!fileName.isEmpty())
+         {
+             model->loadObjectsData(fileName);
+             if (model->dataFilePath() != fileName)
+             {
+                 QMessageBox::information(this, tr("Error"), tr("Cannot load %1.").arg(fileName));
+                 return;
+
+             } else
+             {
+//                 updateViewer( model->pixmap(), ui->ignoreRatioBut->isChecked() );
+                 ui->openDataBut->setChecked(true);
+                 ui->openDataAct->setChecked(true);
+             }
+         } else
+         {
+            qDebug() << "Directory " << dir.absolutePath() << " + " <<  EXTRA_DAT_PATH << "doesn't exist";
+         }
+    }
 }
 
 void MainWindow::on_openImgAct_triggered(bool checked)
@@ -80,11 +113,11 @@ void MainWindow::on_openImgAct_triggered(bool checked)
 
     QDir dir = QDir::current();
     dir.cdUp();
-    dir.cd(EXTRA_PATH);
+    dir.cd(EXTRA_PIC_PATH);
     QString path = (dir.exists()) ?  dir.absolutePath() : QString(QStandardPaths::PicturesLocation);
     if(dir.exists())
     {
-        QString fileName = QFileDialog::getOpenFileName(this, tr("Select image file"), path);
+        QString fileName = QFileDialog::getOpenFileName(this, tr("Select image file"), path, "BMP(*.bmp)");
          if (!fileName.isEmpty())
          {
              QImage image(fileName);
@@ -102,7 +135,7 @@ void MainWindow::on_openImgAct_triggered(bool checked)
              }
          } else
          {
-            qDebug() << "Directory " << dir.absolutePath() << " + " <<  EXTRA_PATH << "doesn't exist";
+            qDebug() << "Directory " << dir.absolutePath() << " + " <<  EXTRA_PIC_PATH << "doesn't exist";
          }
     }
 }
@@ -143,18 +176,19 @@ void MainWindow::on_keepRatioBut_toggled(bool checked)
     }
 }
 
+//TODO: синхронизировать все элементы управления размером
 void MainWindow::on_zoomRatioSlider_sliderMoved(int position)
 {
-    double normilizeVal = (double) position / 100;
+    double normilizeVal = static_cast<double>(position / 100);
     double newSpinVal = 0;
 
-    qDebug() << position << ui->zoomRatioSlider->value() << normilizeVal;
+//    qDebug() << position << ui->zoomRatioSlider->value() << normilizeVal;
     if (ui->zoomRatioSlider->value() > 0)
     {
-        newSpinVal = (double) 1 + normilizeVal;
+        newSpinVal = static_cast<double>(1 + normilizeVal);
         ui->zoomInAct->trigger();
     } else {
-        newSpinVal = (double) 1 + normilizeVal;
+        newSpinVal = static_cast<double>(1 - normilizeVal);
         ui->zoomOutAct->trigger();
     }
     ui->zoomSpinbox->setValue(newSpinVal);

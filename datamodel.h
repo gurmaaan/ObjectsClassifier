@@ -5,6 +5,13 @@
 #include "obj.h"
 #include <QImage>
 #include <QPixmap>
+#include <QFile>
+#include <QTextStream>
+#include <QString>
+#include <QDebug>
+#include <QTime>
+#include <QString>
+#include <QMessageBox>
 
 class DataModel : public QObject
 {
@@ -12,6 +19,7 @@ class DataModel : public QObject
 public:
     explicit DataModel(QObject *parent = nullptr);
 
+    int _objCount;
     QImage image() const;
     QPixmap pixmap() const;
 
@@ -19,10 +27,19 @@ public:
 
     QString imageFilePath() const;
 
+    void loadObjectsData(const QString &dataImageFilePath);
+
     QVector<Obj>_objectsOnImage;
 
+    int objCount() const;
+    void setObjCount(int objCount);
+
+    QString dataFilePath() const;
+    void setDataFilePath(const QString &dataFilePath);
+
 signals:
-    void pathLoaded(QString newPath);
+    void pathImgLoaded(QString newPath);
+    void pathDataLoaded(QString newPath);
 
 private:
     QImage _image;

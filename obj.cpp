@@ -46,3 +46,33 @@ void Obj::pushContourPoint(int x, int y)
     QPoint tempPoint(x, y);
     _contourPointns.append(tempPoint);
 }
+
+int Obj::id() const
+{
+    return _id;
+}
+
+void Obj::setId(int id)
+{
+    _id = id;
+}
+
+int Obj::intPointsCount() const
+{
+    return _internalPoits.count();
+}
+
+void Obj::setIntPointsCount(int intPointsCount)
+{
+    _intPointsCount = intPointsCount;
+}
+
+int Obj::contourPointsCount() const
+{
+    return _contourPointns.count();
+}
+
+void Obj::setContourPointsCount(int contourPointsCount)
+{
+    _contourPointsCount = contourPointsCount;
+}

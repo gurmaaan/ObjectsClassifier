@@ -23,10 +23,20 @@ public:
     void pushContourPoint(QPoint point);
     void pushContourPoint(int x, int y);
 
-signals:
+    int id() const;
+    void setId(int id);
+
+   // QDataStream &operator>>(QDataStream &in)
+    int intPointsCount() const;
+    void setIntPointsCount(int intPointsCount);
+
+    int contourPointsCount() const;
+    void setContourPointsCount(int contourPointsCount);
 
 private:
     int _id;
+    int _intPointsCount;
+    int _contourPointsCount;
     QVector<QPoint> _internalPoits;
     QVector<QPoint> _contourPointns;
 
