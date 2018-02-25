@@ -1,8 +1,9 @@
 #ifndef DATAMODEL_H
 #define DATAMODEL_H
 
-#include <QObject>
 #include "obj.h"
+
+#include <QObject>
 #include <QImage>
 #include <QPixmap>
 #include <QFile>
@@ -12,6 +13,8 @@
 #include <QTime>
 #include <QString>
 #include <QMessageBox>
+#include <QStandardItemModel>
+#include <QVector>
 
 class DataModel : public QObject
 {
@@ -19,36 +22,46 @@ class DataModel : public QObject
 public:
     explicit DataModel(QObject *parent = nullptr);
 
-    int _objCount;
     QImage image() const;
     QPixmap pixmap() const;
 
     void setImage(const QString &imagePath);
-
     QString imageFilePath() const;
 
-    void loadObjectsData(const QString &dataImageFilePath);
-
-    QVector<Obj>_objectsOnImage;
-
+    void loadObjectsData(const QString &dataFilePath);
     int objCount() const;
-    void setObjCount(int objCount);
-
     QString dataFilePath() const;
-    void setDataFilePath(const QString &dataFilePath);
+
+    void pushObject(Obj &ob);
+
+   // QStandardItemModel *getStandardItemtModel() const;
+
+    QVector<Obj> getObjectsOnImage() const;
 
 signals:
     void pathImgLoaded(QString newPath);
     void pathDataLoaded(QString newPath);
+    void objCountChanged(int newCOunt);
 
 private:
     QImage _image;
-    QString _imageFilePath;
-    QString _dataFilePath;
-    QString _attrsFilePath;
 
+    int _objCount;
+    void setObjCount(int objCount);
+
+    QString _imageFilePath;
     void setImagePath(const QString &imageFilePath);
 
+    QString _dataFilePath;
+    QString readFileToString(const QString &dataFilePath);
+    void setDataFilePath(const QString &dataFilePath);
+    QString _attrsFilePath;
+
+    QVector<Obj> _objectsOnImage;
+
+//    QStandardItemModel *_model;
+//    QStandardItemModel *initModel(const QVector<Obj> &objectsOnImage);
+//    void addObjectItem(QStandardItemModel *model, const Obj& ob);
 public slots:
 };
 

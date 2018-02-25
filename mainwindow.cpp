@@ -22,6 +22,9 @@ MainWindow::MainWindow(QWidget *parent) :
     viewer->setScene(scene);
 
     connect(model, SIGNAL(pathImgLoaded(QString)), ui->img_path_lineEdit, SLOT(setText(QString)));
+    connect(model, SIGNAL(pathDataLoaded(QString)), ui->dataPathLineEdit, SLOT(setText(QString)));
+    connect(model, SIGNAL(objCountChanged(int)), ui->ojectsCountSpinBox, SLOT(setValue(int)));
+
 }
 
 MainWindow::~MainWindow()
@@ -70,7 +73,7 @@ void MainWindow::on_openAttrBut_toggled(bool checked)
         ui->openAtrAc->triggered(checked);
 }
 
-//Actions
+//Действие открытия файла с точками
 void MainWindow::on_openDataAct_triggered(bool checked)
 {
     if (ui->openDataAct->isChecked())
@@ -88,14 +91,15 @@ void MainWindow::on_openDataAct_triggered(bool checked)
          if (!fileName.isEmpty())
          {
              model->loadObjectsData(fileName);
-             if (model->dataFilePath() != fileName)
+             if (model->dataFilePath() != fileName || model->objCount() == 0)
              {
                  QMessageBox::information(this, tr("Error"), tr("Cannot load %1.").arg(fileName));
                  return;
 
              } else
              {
-//                 updateViewer( model->pixmap(), ui->ignoreRatioBut->isChecked() );
+                 //ui->treeView->setModel( model->getStandardItemtModel() );
+                 ui->tabWidget->setCurrentIndex(1);
                  ui->openDataBut->setChecked(true);
                  ui->openDataAct->setChecked(true);
              }
@@ -106,6 +110,7 @@ void MainWindow::on_openDataAct_triggered(bool checked)
     }
 }
 
+//Открытие самого изображения
 void MainWindow::on_openImgAct_triggered(bool checked)
 {
     if (ui->openImgAct->isChecked())
@@ -130,6 +135,7 @@ void MainWindow::on_openImgAct_triggered(bool checked)
              {
                  model->setImage(fileName);
                  updateViewer( model->pixmap(), ui->ignoreRatioBut->isChecked() );
+                 ui->tabWidget->setCurrentIndex(0);
                  ui->openImgAct->setChecked(true);
                  ui->openImgBut->setChecked(true);
              }
@@ -176,6 +182,7 @@ void MainWindow::on_keepRatioBut_toggled(bool checked)
     }
 }
 
+//BUG: не работает абсолютно ресайзинг
 //TODO: синхронизировать все элементы управления размером
 void MainWindow::on_zoomRatioSlider_sliderMoved(int position)
 {
@@ -188,7 +195,7 @@ void MainWindow::on_zoomRatioSlider_sliderMoved(int position)
         newSpinVal = static_cast<double>(1 + normilizeVal);
         ui->zoomInAct->trigger();
     } else {
-        newSpinVal = static_cast<double>(1 - normilizeVal);
+        newSpinVal = static_cast<double>(-1 + normilizeVal);
         ui->zoomOutAct->trigger();
     }
     ui->zoomSpinbox->setValue(newSpinVal);

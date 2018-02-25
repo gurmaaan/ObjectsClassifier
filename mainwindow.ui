@@ -66,28 +66,28 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_5">
           <item>
-           <widget class="QLabel" name="pathLabel">
+           <widget class="QLabel" name="dataPathLabel">
             <property name="text">
              <string>Путь:</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="pathLineEdit"/>
+           <widget class="QLineEdit" name="dataPathLineEdit"/>
           </item>
          </layout>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_6">
           <item>
-           <widget class="QLabel" name="label">
+           <widget class="QLabel" name="objectsCountLabel">
             <property name="text">
              <string>Количество:</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="spinBox">
+           <widget class="QSpinBox" name="ojectsCountSpinBox">
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>

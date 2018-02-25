@@ -4,12 +4,28 @@
 #include <QObject>
 #include <QPoint>
 #include <QVector>
+#include <QDebug>
+#include <QDataStream>
 
 class Obj : public QObject
 {
     Q_OBJECT
 public:
-    explicit Obj(QObject *parent = nullptr);
+    //Конструктор запрещающей автоприведение типов (стандартный QT)
+//    explicit Obj(QObject *parent = nullptr);
+    //Конструктор копирования
+    Obj(const Obj &other);
+    //Конструктор по умолчанию
+    Obj(const int id = 0);
+
+    //Диструктор по умолчанию
+    ~Obj();
+
+    //Перегрузка оператора равенства
+    Obj& operator = (const Obj &ob);
+
+    //Хеширование (получене уникального числа для объекта) по id. id <==> primary key
+    inline uint qHash(const Obj &ob);
 
     QVector<QPoint> internalPoits() const;
     void setInternalPoits(const QVector<QPoint> &internalPoits);
@@ -26,7 +42,6 @@ public:
     int id() const;
     void setId(int id);
 
-   // QDataStream &operator>>(QDataStream &in)
     int intPointsCount() const;
     void setIntPointsCount(int intPointsCount);
 
@@ -39,8 +54,13 @@ private:
     int _contourPointsCount;
     QVector<QPoint> _internalPoits;
     QVector<QPoint> _contourPointns;
-
-public slots:
 };
+
+Q_DECLARE_METATYPE(Obj);
+
+//Перегрузка оператора вывода в QDebug
+QDebug operator <<(QDebug dbg, const Obj &ob);
+//Перегрузка оператора сравнения
+bool operator ==(const Obj& ob1, const Obj& ob2);
 
 #endif // OBJ_H
