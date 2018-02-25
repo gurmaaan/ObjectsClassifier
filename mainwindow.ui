@@ -118,7 +118,26 @@
          </layout>
         </item>
         <item>
-         <widget class="QTreeView" name="treeView"/>
+         <widget class="QTreeView" name="treeView">
+          <property name="sizeAdjustPolicy">
+           <enum>QAbstractScrollArea::AdjustToContents</enum>
+          </property>
+          <property name="tabKeyNavigation">
+           <bool>true</bool>
+          </property>
+          <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
+          <attribute name="headerCascadingSectionResizes">
+           <bool>true</bool>
+          </attribute>
+          <attribute name="headerHighlightSections">
+           <bool>true</bool>
+          </attribute>
+          <attribute name="headerShowSortIndicator" stdset="0">
+           <bool>true</bool>
+          </attribute>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -256,7 +275,7 @@
         <bool>true</bool>
        </property>
        <property name="description">
-        <string>Файл .bmpсодержащий саму картинку</string>
+        <string>Файл .bmp содержащий саму картинку</string>
        </property>
       </widget>
      </item>

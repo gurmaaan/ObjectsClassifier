@@ -4,33 +4,66 @@
 DataModel::DataModel(QObject *parent) : QObject(parent)
 {
     _objCount = 0;
-      //initModel(_objectsOnImage);
 }
 
-//QStandardItemModel *DataModel::getStandardItemtModel() const
-//{
-//    return _model;
-//}
+QStandardItemModel *DataModel::getStandardItemtModel() const
+{
+    return _model;
+}
 
-//QStandardItemModel *DataModel::initModel(const QVector<Obj> &objectsOnImage)
-//{
-//    QStandardItemModel *model = new QStandardItemModel(0, 2);
+QStandardItemModel *DataModel::initModel()
+{
+    QStandardItemModel *model = new QStandardItemModel(0, 2);
 
-//    model->setHeaderData(0, Qt::Horizontal, "Object");
-//    model->setHeaderData(1, Qt::Horizontal, "Attribute");
+    model->setHeaderData(0, Qt::Horizontal, "Object");
+    model->setHeaderData(1, Qt::Horizontal, "Attribute");
+    return model;
+}
 
-//    for (int i = 0; i <= objectsOnImage.count(); i++)
-//    {
-//        addObjectItem(model, objectsOnImage.at(i));
-//    }
+void DataModel::addObjectRootItem(QStandardItemModel *model, const Obj &ob)
+{
+    QString objHeaderText = "id: " + QString::number(ob.id());
+    QStandardItem *item = new QStandardItem(objHeaderText);
 
-//    return model;
-//}
+    item->setCheckable(true);
+    item->setSizeHint(QSize(200, 30));
+    addMetaObjectItem(item, ob);
+    model->appendRow(item);
+}
 
-//void DataModel::addObjectItem(QStandardItemModel *model, const Obj &ob)
-//{
+void DataModel::addMetaObjectItem(QStandardItem *parent, const Obj &ob)
+{
+    QString intPointsCountStr = "Internal points count: " + QString::number(ob.intPointsCount());
+    QStandardItem *intPointsCountItem = new QStandardItem(intPointsCountStr);
+    intPointsCountItem->setSizeHint(QSize(150, 30));
+    addPointsObjectItem(intPointsCountItem, ob.internalPoits());
 
-//}
+    QString contourPointsCountStr = "Contour points count: " + QString::number(ob.contourPointsCount());
+    QStandardItem *contourPointsItem = new QStandardItem(contourPointsCountStr);
+    contourPointsItem->setSizeHint(QSize(150, 30));
+    addPointsObjectItem(contourPointsItem, ob.contourPointns());
+
+    QList<QStandardItem*> list;
+    list.push_back(intPointsCountItem);
+    list.push_back(contourPointsItem);
+    parent->appendRows(list);
+}
+
+void DataModel::addPointsObjectItem(QStandardItem *parentMetaItem, const QVector<QPoint> &points)
+{
+    QList<QStandardItem*> pointsList;
+
+    for(auto point : points) {
+       QString pointStr = "(" + QString::number(point.x()) + " ; " + QString::number(point.y()) + ")";
+       QStandardItem *pointItem = new QStandardItem(pointStr);
+       pointItem->setSizeHint(QSize(100, 30));
+       pointsList.push_back(pointItem);
+    }
+
+    parentMetaItem->appendRows(pointsList);
+}
+
+
 
 int DataModel::objCount() const
 {
@@ -51,6 +84,7 @@ void DataModel::pushObject(Obj &ob)
 {
     _objectsOnImage.append(ob);
     qDebug() << ob;
+    addObjectRootItem(_model, ob);
 }
 
 void DataModel::setDataFilePath(const QString &dataFilePath)
@@ -79,6 +113,7 @@ QString DataModel::imageFilePath() const
 //Загрузка точек из файла
 void DataModel::loadObjectsData(const QString &dataFilePath)
 {
+    _model = initModel();
     setDataFilePath(dataFilePath);
     QString fileString = readFileToString(dataFilePath);
 
@@ -107,7 +142,6 @@ void DataModel::loadObjectsData(const QString &dataFilePath)
 
         pushObject(ob);
     }
-    //_model = initModel(_objectsOnImage);
 }
 
 void DataModel::setImagePath(const QString &imagePath)

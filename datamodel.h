@@ -34,7 +34,7 @@ public:
 
     void pushObject(Obj &ob);
 
-   // QStandardItemModel *getStandardItemtModel() const;
+   QStandardItemModel *getStandardItemtModel() const;
 
     QVector<Obj> getObjectsOnImage() const;
 
@@ -59,9 +59,11 @@ private:
 
     QVector<Obj> _objectsOnImage;
 
-//    QStandardItemModel *_model;
-//    QStandardItemModel *initModel(const QVector<Obj> &objectsOnImage);
-//    void addObjectItem(QStandardItemModel *model, const Obj& ob);
+    QStandardItemModel *_model;
+    QStandardItemModel *initModel();
+    void addObjectRootItem(QStandardItemModel *model, const Obj& ob);
+    void addMetaObjectItem(QStandardItem *parentObj, const Obj& ob);
+    void addPointsObjectItem(QStandardItem *parentMetaItem, const QVector<QPoint> &points);
 public slots:
 };
 

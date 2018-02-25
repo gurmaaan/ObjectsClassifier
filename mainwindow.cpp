@@ -98,7 +98,7 @@ void MainWindow::on_openDataAct_triggered(bool checked)
 
              } else
              {
-                 //ui->treeView->setModel( model->getStandardItemtModel() );
+                 ui->treeView->setModel( model->getStandardItemtModel() );
                  ui->tabWidget->setCurrentIndex(1);
                  ui->openDataBut->setChecked(true);
                  ui->openDataAct->setChecked(true);
