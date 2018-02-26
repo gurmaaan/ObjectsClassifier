@@ -22,7 +22,7 @@ class DataModel : public QObject
 public:
     explicit DataModel(QObject *parent = nullptr);
 
-    QImage image() const;
+    QImage image();
     QPixmap pixmap() const;
 
     void setImage(const QString &imagePath);
@@ -32,16 +32,19 @@ public:
     int objCount() const;
     QString dataFilePath() const;
 
+    void resizeHeaderItem(int newWidth);
+
     void pushObject(Obj &ob);
 
-   QStandardItemModel *getStandardItemtModel() const;
+    QStandardItemModel *getStandardItemtModel() const;
 
     QVector<Obj> getObjectsOnImage() const;
 
 signals:
     void pathImgLoaded(QString newPath);
     void pathDataLoaded(QString newPath);
-    void objCountChanged(int newCOunt);
+    void objCountChanged(int newCount);
+    void incrementProgress(int newValue);
 
 private:
     QImage _image;

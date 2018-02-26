@@ -25,7 +25,7 @@ void DataModel::addObjectRootItem(QStandardItemModel *model, const Obj &ob)
     QString objHeaderText = "id: " + QString::number(ob.id());
     QStandardItem *item = new QStandardItem(objHeaderText);
 
-    item->setCheckable(true);
+    //item->setCheckable(true);
     item->setSizeHint(QSize(200, 30));
     addMetaObjectItem(item, ob);
     model->appendRow(item);
@@ -44,8 +44,8 @@ void DataModel::addMetaObjectItem(QStandardItem *parent, const Obj &ob)
     addPointsObjectItem(contourPointsItem, ob.contourPointns());
 
     QList<QStandardItem*> list;
-    list.push_back(intPointsCountItem);
     list.push_back(contourPointsItem);
+    list.push_back(intPointsCountItem);
     parent->appendRows(list);
 }
 
@@ -62,8 +62,6 @@ void DataModel::addPointsObjectItem(QStandardItem *parentMetaItem, const QVector
 
     parentMetaItem->appendRows(pointsList);
 }
-
-
 
 int DataModel::objCount() const
 {
@@ -83,7 +81,7 @@ QString DataModel::dataFilePath() const
 void DataModel::pushObject(Obj &ob)
 {
     _objectsOnImage.append(ob);
-    qDebug() << ob;
+    //qDebug() << ob;
     addObjectRootItem(_model, ob);
 }
 
@@ -140,6 +138,10 @@ void DataModel::loadObjectsData(const QString &dataFilePath)
         for (int j = indOfC + 1; j < pointsFullList.count(); j+=2)
             ob.pushContourPoint(pointsFullList.at(j).toInt(), pointsFullList.at(j+1).toInt());
 
+        double progress = static_cast<double>(objectsStringList.indexOf(objFullString)) *
+                static_cast<double>(100) / static_cast<double>(objCount()) ;
+        //qDebug() << progress;
+        emit incrementProgress(static_cast<int>(round(progress)));
         pushObject(ob);
     }
 }
@@ -182,7 +184,7 @@ QString DataModel::readFileToString(const QString &dataFilePath)
     }
 }
 
-QImage DataModel::image() const
+QImage DataModel::image()
 {
     return _image;
 }
