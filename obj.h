@@ -6,6 +6,7 @@
 #include <QVector>
 #include <QDebug>
 #include <QDataStream>
+#include <QGraphicsItem>
 
 class Obj : public QObject
 {

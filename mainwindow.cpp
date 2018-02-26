@@ -3,6 +3,7 @@
 #include <QAbstractSlider>
 #include <QResizeEvent>
 
+//TODO: Виджет цвет + слайдер прозрачности
 #ifndef EXTRA_PIC_PATH
 #define EXTRA_PIC_PATH QString("ObjectsClassifier/images")
 #endif
@@ -55,18 +56,11 @@ void MainWindow::updateViewer(const QPixmap &pixmap, double scaleCoeff, Qt::Aspe
     int w = static_cast<int>(newW);
     int h = static_cast<int>(newH);
 
-    qDebug() << QTime::currentTime();
-    qDebug() << "Old w: " << oldW << endl
-             << "New w: " << w << endl
-             << "Scaling: " << scaleCoeff << endl
-             << "Scene: " << scene->width();
-
     QPixmap newPixMap(pixmap.scaled(QSize(w, h), mode));
     QGraphicsPixmapItem *pItem = scene->addPixmap(newPixMap);
-    pItem->setPos(scene->width() / 2, scene->height() / 2);
-    //TODO: Затестить 0 0
+    pItem->setPos(0, 0);
 
-    ui->graphicsView->fitInView(QRectF(scene->width() / 2, scene->height() / 2, w, h), mode);
+    //ui->graphicsView->fitInView(QRectF(scene->width() / 2, scene->height() / 2, w, h), mode);
     ui->graphicsView->setScene(scene);
     ui->graphicsView->show();
 }
@@ -299,3 +293,4 @@ void MainWindow::on_zoomRatioSlider_valueChanged(int value)
         ui->zoomSpinbox->setValue(sameNonIntVal);
     }
 }
+

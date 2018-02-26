@@ -56,6 +56,7 @@ private slots:
 
     void on_openAttrAct_toggled(bool arg1);
 
+
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
