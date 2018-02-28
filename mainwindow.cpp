@@ -1,24 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QAbstractSlider>
-#include <QResizeEvent>
 
-//TODO: Виджет цвет + слайдер прозрачности
-#ifndef EXTRA_PIC_PATH
-#define EXTRA_PIC_PATH QString("ObjectsClassifier/images")
-#endif
-
-#ifndef EXTRA_DAT_PATH
-#define EXTRA_DAT_PATH QString("ObjectsClassifier/data")
-#endif
-
-#define TFS ";;"
-//по названию (Отсеивание конкретно этих типов среди остальных )
-#define N_F_PNG QString("PNG Images (*.png)")
-#define N_F_BMP QString("Bitmap Image (*.bmp)")
-#define N_F_JPG QString("JPG Images (*.jpg)")
-#define N_F_TIF QString("TIF Images (*.tif)")
-#define N_F_ALL (N_F_BMP + TFS + N_F_JPG + TFS + N_F_PNG + TFS + N_F_TIF)
+#include "const.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -31,10 +14,16 @@ MainWindow::MainWindow(QWidget *parent) :
     scene = new QGraphicsScene();
     viewer->setScene(scene);
 
-    connect(model, SIGNAL(pathImgLoaded(QString)), ui->img_path_lineEdit, SLOT(setText(QString)));
-    connect(model, SIGNAL(pathDataLoaded(QString)), ui->dataPathLineEdit, SLOT(setText(QString)));
-    connect(model, SIGNAL(objCountChanged(int)), ui->ojectsCountSpinBox, SLOT(setValue(int)));
-    connect(model, SIGNAL(incrementProgress(int)), ui->progressBar, SLOT(setValue(int)));
+    initColorWidgets();
+
+    connect(model, &DataModel::pathImgLoaded, ui->img_path_lineEdit, &QLineEdit::setText);
+    connect(model, &DataModel::pathDataLoaded, ui->dataPathLineEdit, &QLineEdit::setText);
+    connect(model, &DataModel::objCountChanged, ui->ojectsCountSpinBox, &QSpinBox::setValue);
+    connect(model, &DataModel::incrementProgress, ui->progressBar, &QProgressBar::setValue);
+
+    connect(ui->objClrWidget, &ColorWidget::colorChenged, this, &MainWindow::updateObjColor);
+    connect(ui->contourClrWidget, &ColorWidget::colorChenged, this, &MainWindow::updateObjColor);
+
 }
 
 MainWindow::~MainWindow()
@@ -50,17 +39,19 @@ void MainWindow::updateViewer(const QPixmap &pixmap, double scaleCoeff, Qt::Aspe
     int oldW = pixmap.size().width();
     int oldH = pixmap.size().height();
 
-    double newW = static_cast<double>(oldW) * scaleCoeff;
-    double newH = static_cast<double>(oldH) * scaleCoeff;
+    //FIXME: деление на объект - костыль тк ресайзилось при увелечение коэффициента и тд
+    double newW = static_cast<double>(oldW) / scaleCoeff;
+    double newH = static_cast<double>(oldH) / scaleCoeff;
 
     int w = static_cast<int>(newW);
     int h = static_cast<int>(newH);
 
-    QPixmap newPixMap(pixmap.scaled(QSize(w, h), mode));
+    //QPixmap newPixMap(pixmap.scaled(QSize(w, h), mode));
+    QPixmap newPixMap(pixmap);
     QGraphicsPixmapItem *pItem = scene->addPixmap(newPixMap);
     pItem->setPos(0, 0);
 
-    //ui->graphicsView->fitInView(QRectF(scene->width() / 2, scene->height() / 2, w, h), mode);
+    ui->graphicsView->fitInView(QRectF(scene->width() / 2, scene->height() / 2, w, h), mode);
     ui->graphicsView->setScene(scene);
     ui->graphicsView->show();
 }
@@ -141,6 +132,8 @@ void MainWindow::on_openDataAct_triggered(bool checked)
 {
     updateAccessState(ui->openDataAct, ui->openDataBut, !checked, checked);
     updateAccessState(ui->openAttrAct, ui->openAttrBut, checked);
+    ui->objClrWidget->setEnabled(checked);
+    ui->contourClrWidget->setEnabled(true);
 
     ui->tabWidget->setCurrentIndex(1);
 
@@ -172,6 +165,19 @@ void MainWindow::on_openAttrAct_toggled(bool arg1)
     //TODO: загиузка csv файла
 }
 
+void MainWindow::initColorWidgets()
+{
+    ui->objClrWidget->setTitle("Объекты");
+    ui->objClrWidget->setMinVal(0);
+    ui->objClrWidget->setMaxVal(1.0);
+    ui->objClrWidget->setEnabled(false);
+
+    ui->contourClrWidget->setTitle("Контур");
+    ui->contourClrWidget->setMinVal(0);
+    ui->contourClrWidget->setMaxVal(1.0);
+    ui->contourClrWidget->setEnabled(false);
+}
+
 //Скейлинг и прочие действия с зумом
 void MainWindow::on_zoomRatioSlider_sliderMoved(int position)
 {
@@ -194,6 +200,18 @@ double MainWindow::scaleCoeff() const
 void MainWindow::setScaleCoeff(double newScaleCoeff)
 {
     _scaleCoeff = newScaleCoeff;
+}
+
+//При любом изменении цвета виджета происходит перерисовка полигона на сцене
+//За то отображается и впринципе объект отвечает прозрачность
+void MainWindow::updateObjColor(QColor clr)
+{
+    qDebug() << "Updated object Color: " << clr << ui->objClrWidget->getColor();
+}
+
+void MainWindow::updateContourColor(QColor clr)
+{
+    qDebug() << "Updated contour Color: " << clr << ui->contourClrWidget->getColor();
 }
 
 void MainWindow::on_zoomSpinbox_valueChanged(double newScaleCoeff)
@@ -254,17 +272,20 @@ void MainWindow::updateAccessState(QAction *ac, QRadioButton *bt, bool newEnable
 
 Qt::AspectRatioMode MainWindow::checkedRatio()
 {
+    Qt::AspectRatioMode mode;
     if (ui->keepRatioBut->isChecked())
     {
         updateAccessState(ui->keepRatioAct, ui->keepRatioBut, true, true);
         updateAccessState(ui->ignoreRatioAct, ui->ignoreRatioBut, true, false);
-        return Qt::KeepAspectRatio;
+        mode =  Qt::KeepAspectRatio;
     } else if(ui->ignoreRatioBut->isChecked())
     {
         updateAccessState(ui->ignoreRatioAct, ui->ignoreRatioBut, true, true);
         updateAccessState(ui->keepRatioAct, ui->keepRatioBut, true, false);
-        return Qt::IgnoreAspectRatio;
+        mode =  Qt::IgnoreAspectRatio;
     }
+
+    return mode;
 }
 
 void MainWindow::on_zoomInAct_triggered()
@@ -293,4 +314,3 @@ void MainWindow::on_zoomRatioSlider_valueChanged(int value)
         ui->zoomSpinbox->setValue(sameNonIntVal);
     }
 }
-

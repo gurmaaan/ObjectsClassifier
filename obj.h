@@ -12,8 +12,6 @@ class Obj : public QObject
 {
     Q_OBJECT
 public:
-    //Конструктор запрещающей автоприведение типов (стандартный QT)
-//    explicit Obj(QObject *parent = nullptr);
     //Конструктор копирования
     Obj(const Obj &other);
     //Конструктор по умолчанию

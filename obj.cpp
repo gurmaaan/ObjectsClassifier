@@ -1,10 +1,5 @@
 #include "obj.h"
 
-//Obj::Obj(QObject *parent) : QObject(parent)
-//{
-
-//}
-
 Obj::Obj(const int id)
     : _id(id)
 {

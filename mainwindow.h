@@ -8,8 +8,11 @@
 #include <QGraphicsPixmapItem>
 #include <QDir>
 #include <QRadioButton>
+#include <QAbstractSlider>
+#include <QResizeEvent>
 
 #include "datamodel.h"
+#include "colorwidget.h"
 
 namespace Ui {
 class MainWindow;
@@ -27,6 +30,10 @@ public:
 
     double scaleCoeff() const;
     void setScaleCoeff(double newScaleCoeff);
+
+public slots:
+    void updateObjColor(QColor clr);
+    void updateContourColor(QColor clr);
 
 private slots:
     void on_openDataBut_toggled(bool checked);
@@ -62,6 +69,7 @@ private:
     QGraphicsScene *scene;
     QGraphicsView *viewer;
 
+    void initColorWidgets();
     QString requiredPath(QDir currentDir, const QString &redirect);
     void updateAccessState(QAction *ac, QPushButton *bt, bool newEnableState, bool newCheckedState = false);
     void updateAccessState(QAction *ac, QRadioButton *bt, bool newEnableState, bool newCheckedState = false);
