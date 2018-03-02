@@ -18,13 +18,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
     initColorWidgets();
 
+    tabifyDockWidget(ui->view_dock, ui->dock_contour);
+    tabifyDockWidget(ui->view_dock, ui->object_dock);
+    tabifyDockWidget(ui->view_dock, ui->scale_dock);
+
     connect(model, &DataModel::pathImgLoaded, ui->img_path_lineEdit, &QLineEdit::setText);
     connect(model, &DataModel::pathDataLoaded, ui->dataPathLineEdit, &QLineEdit::setText);
-    connect(model, &DataModel::objCountChanged, ui->ojectsCountSpinBox, &QSpinBox::setValue);
-    connect(model, &DataModel::incrementProgress, ui->progressBar, &QProgressBar::setValue);
+    connect(model, &DataModel::objCountChanged, ui->dataObjectsCountSpinBox, &QSpinBox::setValue);
+    connect(model, &DataModel::incrementProgress, ui->dataFileProgressBar, &QProgressBar::setValue);
 
-    connect(ui->objClrWidget, &ColorWidget::colorChenged, this, &MainWindow::updateObjColor);
-    connect(ui->contourClrWidget, &ColorWidget::colorChenged, this, &MainWindow::updateObjColor);
+    connect(ui->objectColorWidget, &ColorWidget::colorChenged, this, &MainWindow::updateObjColor);
+    connect(ui->contourColorWidget, &ColorWidget::colorChenged, this, &MainWindow::updateContourColor);
 
 }
 
@@ -132,10 +136,12 @@ void MainWindow::on_openImgAct_triggered(bool checked)
 //Действие открытия файла с точками
 void MainWindow::on_openDataAct_triggered(bool checked)
 {
+
+    //TODO: добавить иконки в качестве части изображения
     updateAccessState(ui->openDataAct, ui->openDataBut, !checked, checked);
     updateAccessState(ui->openAttrAct, ui->openAttrBut, checked);
-    ui->objClrWidget->setEnabled(checked);
-    ui->contourClrWidget->setEnabled(true);
+    ui->objectColorWidget->setEnabled(checked);
+    ui->contourColorWidget->setEnabled(checked);
 
     ui->tabWidget->setCurrentIndex(1);
 
@@ -153,26 +159,24 @@ void MainWindow::on_openDataAct_triggered(bool checked)
 
         } else
         {
-            ui->progressBar->setMaximum(model->objCount());
+            ui->dataFileProgressBar->setMaximum(model->objCount());
 
             ui->treeView->setModel( model->getStandardItemtModel() );
             ui->treeView->resizeColumnToContents(0);
             ui->treeView->resizeColumnToContents(1);
 
-            ui->progressBar->setValue(model->objCount());
+            ui->dataFileProgressBar->setValue(model->objCount());
         }
     }
 }
 
 void MainWindow::initColorWidgets()
 {
-    ui->objClrWidget->setTitle("Объекты");
-    ui->objClrWidget->setChecked(false);
-    ui->objClrWidget->setColor(Qt::green);
+    ui->objectColorWidget->setChecked(false);
+    ui->objectColorWidget->setColor(Qt::green);
 
-    ui->contourClrWidget->setTitle("Контур");
-    ui->contourClrWidget->setChecked(false);
-    ui->contourClrWidget->setColor(Qt::red);
+    ui->contourColorWidget->setChecked(false);
+    ui->contourColorWidget->setColor(Qt::red);
 }
 
 //Скейлинг и прочие действия с зумом
@@ -201,14 +205,15 @@ void MainWindow::setScaleCoeff(double newScaleCoeff)
 
 //При любом изменении цвета виджета происходит перерисовка полигона на сцене
 //За то отображается и впринципе объект отвечает прозрачность
+//
 void MainWindow::updateObjColor(QColor clr)
 {
-    qDebug() << "Updated object Color: " << clr << ui->objClrWidget->getColor();
+
 }
 
 void MainWindow::updateContourColor(QColor clr)
 {
-    qDebug() << "Updated contour Color: " << clr << ui->contourClrWidget->getColor();
+    qDebug() << "Updated contour Color: " << clr << ui->contourColorWidget->getColor();
 }
 
 void MainWindow::on_zoomSpinbox_valueChanged(double newScaleCoeff)
@@ -325,7 +330,7 @@ void MainWindow::on_openAttrAct_triggered(bool checked)
     csvModel->setColumnCount(18);
     //TODO: добавить заголовки из проксирования
     //csvModel->setHorizontalHeaderLabels(QStringList() << "Марка" << "Модель" << "Цена");
-    ui->tableView->setModel(csvModel);
+    ui->attrTbleView->setModel(csvModel);
 
     QString fileName = QFileDialog::getOpenFileName(this, tr("Select attributes file"), requiredPath(QDir::current(), EXTRA_ATTR_PATH), "CSV(*.csv)");
 
@@ -349,4 +354,9 @@ void MainWindow::on_openAttrAct_triggered(bool checked)
             file.close();
         }
     }
+}
+
+void MainWindow::on_contourWidthSlider_sliderMoved(int position)
+{
+
 }

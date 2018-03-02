@@ -1,5 +1,4 @@
 #include "datamodel.h"
-#include <QVector>
 
 DataModel::DataModel(QObject *parent) : QObject(parent)
 {
@@ -15,8 +14,8 @@ QStandardItemModel *DataModel::initModel()
 {
     QStandardItemModel *model = new QStandardItemModel(0, 2);
 
-    model->setHeaderData(0, Qt::Horizontal, "Object");
-    model->setHeaderData(1, Qt::Horizontal, "Attribute");
+    model->setHeaderData(0, Qt::Horizontal, "Объект");
+    model->setHeaderData(1, Qt::Horizontal, "Атрибут");
     return model;
 }
 
@@ -33,7 +32,7 @@ void DataModel::addObjectRootItem(QStandardItemModel *model, const Obj &ob)
 
 void DataModel::addMetaObjectItem(QStandardItem *parent, const Obj &ob)
 {
-    QString intPointsCountStr = "Internal points count: " + QString::number(ob.intPointsCount());
+    QString intPointsCountStr = "Internal points count: " + QString::number(ob.getInternalPointsCount());
     QStandardItem *intPointsCountItem = new QStandardItem(intPointsCountStr);
     intPointsCountItem->setSizeHint(QSize(150, 30));
     addPointsObjectItem(intPointsCountItem, ob.internalPoits());
@@ -146,6 +145,7 @@ void DataModel::loadObjectsData(const QString &dataFilePath)
     }
 }
 
+//Инициализация поля с путем файла из строки
 void DataModel::setImagePath(const QString &imagePath)
 {
     if(!imagePath.isEmpty())
@@ -155,7 +155,7 @@ void DataModel::setImagePath(const QString &imagePath)
     }
 }
 
-//Считьы
+//Получение строки имени файла
 QString DataModel::readFileToString(const QString &dataFilePath)
 {
     QFile datafile(dataFilePath);

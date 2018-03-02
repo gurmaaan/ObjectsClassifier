@@ -14,6 +14,8 @@
 #include <QString>
 #include <QMessageBox>
 #include <QStandardItemModel>
+#include <QGraphicsItem>
+#include <QGraphicsScene>
 #include <QVector>
 
 class DataModel : public QObject

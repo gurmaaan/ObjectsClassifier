@@ -10,20 +10,26 @@
     <x>0</x>
     <y>0</y>
     <width>201</width>
-    <height>122</height>
+    <height>125</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>200</width>
+    <height>125</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="enabled">
       <bool>true</bool>
      </property>
      <property name="title">
-      <string>ObjectName</string>
+      <string>Цвет и прозрачность</string>
      </property>
      <property name="flat">
       <bool>false</bool>
@@ -34,7 +40,7 @@
      <property name="checked">
       <bool>false</bool>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
        <layout class="QHBoxLayout" name="colorLayout">
         <item>

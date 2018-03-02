@@ -64,6 +64,8 @@ private slots:
 
     void on_openAttrAct_triggered(bool checked);
 
+    void on_contourWidthSlider_sliderMoved(int position);
+
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
