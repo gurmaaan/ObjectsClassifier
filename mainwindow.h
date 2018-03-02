@@ -9,6 +9,7 @@
 #include <QDir>
 #include <QRadioButton>
 #include <QAbstractSlider>
+#include <QStandardItemModel>
 #include <QResizeEvent>
 
 #include "datamodel.h"
@@ -61,13 +62,14 @@ private slots:
 
     void on_zoomRatioSlider_valueChanged(int value);
 
-    void on_openAttrAct_toggled(bool arg1);
-
+    void on_openAttrAct_triggered(bool checked);
 
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
     QGraphicsView *viewer;
+
+    QStandardItemModel *csvModel;
 
     void initColorWidgets();
     QString requiredPath(QDir currentDir, const QString &redirect);

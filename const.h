@@ -9,6 +9,10 @@
 #define EXTRA_DAT_PATH QString("ObjectsClassifier/data")
 #endif
 
+#ifndef EXTRA_ATTR_PATH
+#define EXTRA_ATTR_PATH QString("ObjectsClassifier/attributes")
+#endif
+
 #define TFS ";;"
 //по названию (Отсеивание конкретно этих типов среди остальных )
 #define N_F_PNG QString("PNG Images (*.png)")

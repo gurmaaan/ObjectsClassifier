@@ -93,7 +93,7 @@ background-color: rgb(167, 252, 186);</string>
            <string>Прозрачность равна 0, альфаканал отсутсвует, объект не скрыт</string>
           </property>
           <property name="text">
-           <string>0.0</string>
+           <string>0</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -109,7 +109,7 @@ background-color: rgb(167, 252, 186);</string>
            <number>0</number>
           </property>
           <property name="maximum">
-           <number>100</number>
+           <number>255</number>
           </property>
           <property name="singleStep">
            <number>1</number>
@@ -118,7 +118,7 @@ background-color: rgb(167, 252, 186);</string>
            <number>10</number>
           </property>
           <property name="value">
-           <number>100</number>
+           <number>0</number>
           </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -134,7 +134,7 @@ background-color: rgb(167, 252, 186);</string>
            <string>Если прозрачность равна 1, то объект полностью скрыт и не виден</string>
           </property>
           <property name="text">
-           <string>1.0</string>
+           <string>255</string>
           </property>
           <property name="buddy">
            <cstring>slider</cstring>

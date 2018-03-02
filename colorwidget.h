@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QColor>
+#include <QRgb>
 #include <QColorDialog>
 #include <QDebug>
 
@@ -15,23 +16,29 @@ class ColorWidget : public QWidget
     Q_OBJECT
 
 public:
+    //0 = полностью прозрачный объект
+    //255 = абсолютно непрозрачный (видно в оригинале)
     explicit ColorWidget(QWidget *parent = 0);
     ~ColorWidget();
 
     void setTitle(const QString title);
     void setParamName(const QString name);
 
-    void setMinVal(const double min);
-    double getMin() const;
 
-    void setMaxVal(const double max);
-    double getMax() const;
+    void setMinAlpha(const int min);
+    int getMinAlpha() const;
+
+    void setMaxAlpha(const int max);
+    int getMaxAlpha() const;
 
     QColor getColor() const;
     void setColor(QColor value);
 
-    double getVal();
-    void setVal(double val);
+    int getAlpha();
+    void setAlpha(int val);
+
+    bool isChecked();
+    void setChecked(bool checked);
 
 signals:
     void colorChenged(QColor color);
@@ -47,10 +54,11 @@ private:
     QColor _color;
     QString _title;
     QString _paramName;
+    bool _checked;
 
-    double _min;
-    double _max;
-    double _val;
+    int _min;
+    int _max;
+    int _alpha;
 
     void updateButtonStyleSheet(QColor newButtonCOlor);
 

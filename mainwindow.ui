@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1028</width>
-    <height>803</height>
+    <height>882</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="imgTab">
        <attribute name="title">
@@ -210,8 +210,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>731</width>
-             <height>718</height>
+             <width>98</width>
+             <height>46</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -560,10 +560,18 @@
       </widget>
      </item>
      <item>
-      <widget class="ColorWidget" name="objClrWidget" native="true"/>
+      <widget class="ColorWidget" name="objClrWidget" native="true">
+       <property name="autoFillBackground">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
      <item>
-      <widget class="ColorWidget" name="contourClrWidget" native="true"/>
+      <widget class="ColorWidget" name="contourClrWidget" native="true">
+       <property name="autoFillBackground">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>

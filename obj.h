@@ -51,8 +51,9 @@ private:
     int _id;
     int _intPointsCount;
     int _contourPointsCount;
-    QVector<QPoint> _internalPoits;
-    QVector<QPoint> _contourPointns;
+
+    QVector<QPoint> _internalPoints;
+    QVector<QPoint> _contourPoints;
 };
 
 Q_DECLARE_METATYPE(Obj);

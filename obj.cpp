@@ -13,9 +13,9 @@ Obj::~Obj()
 Obj::Obj(const Obj &other)
 {
     _id = other.id();
-    _contourPointns = other.contourPointns();
+    _contourPoints = other.contourPointns();
     _contourPointsCount = other.contourPointsCount();
-    _internalPoits = other.internalPoits();
+    _internalPoints = other.internalPoits();
     _intPointsCount = other.intPointsCount();
 }
 
@@ -43,44 +43,44 @@ uint Obj::qHash(const Obj &ob)
 
 QVector<QPoint> Obj::internalPoits() const
 {
-    return _internalPoits;
+    return _internalPoints;
 }
 
 void Obj::setInternalPoits(const QVector<QPoint> &internalPoits)
 {
-    _internalPoits = internalPoits;
+    _internalPoints = internalPoits;
 }
 
 QVector<QPoint> Obj::contourPointns() const
 {
-    return _contourPointns;
+    return _contourPoints;
 }
 
 void Obj::setContourPointns(const QVector<QPoint> &contourPointns)
 {
-    _contourPointns = contourPointns;
+    _contourPoints = contourPointns;
 }
 
 void Obj::pushInternalPoint(QPoint point)
 {
-    _internalPoits.append(point);
+    _internalPoints.append(point);
 }
 
 void Obj::pushInternalPoint(int x, int y)
 {
     QPoint tempPoint(x, y);
-    _internalPoits.append(tempPoint);
+    _internalPoints.append(tempPoint);
 }
 
 void Obj::pushContourPoint(QPoint point)
 {
-    _contourPointns.append(point);
+    _contourPoints.append(point);
 }
 
 void Obj::pushContourPoint(int x, int y)
 {
     QPoint tempPoint(x, y);
-    _contourPointns.append(tempPoint);
+    _contourPoints.append(tempPoint);
 }
 
 int Obj::id() const

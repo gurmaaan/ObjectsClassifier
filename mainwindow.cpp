@@ -3,6 +3,8 @@
 
 #include "const.h"
 
+//TODO: Поменять бесящий черный значок на белый
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -83,7 +85,7 @@ void MainWindow::on_closeBut_clicked()
     ui->closeAct->triggered(true);
 }
 
-//Дейстьвие закрытия
+//Действие закрытия
 void MainWindow::on_closeAct_triggered(bool checked)
 {
     updateAccessState(ui->closeAct, ui->closeBut, !checked);
@@ -137,7 +139,10 @@ void MainWindow::on_openDataAct_triggered(bool checked)
 
     ui->tabWidget->setCurrentIndex(1);
 
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Select data file"), requiredPath(QDir::current(), EXTRA_DAT_PATH), "DAT(*.dat)");
+    QString fileName = QFileDialog::getOpenFileName(this,
+                                                    tr("Select data file"),
+                                                    requiredPath(QDir::current(),
+                                                    EXTRA_DAT_PATH), "DAT(*.dat)");
     if (!fileName.isEmpty())
     {
         model->loadObjectsData(fileName);
@@ -159,23 +164,15 @@ void MainWindow::on_openDataAct_triggered(bool checked)
     }
 }
 
-//Файл атрибутов
-void MainWindow::on_openAttrAct_toggled(bool arg1)
-{
-    //TODO: загиузка csv файла
-}
-
 void MainWindow::initColorWidgets()
 {
     ui->objClrWidget->setTitle("Объекты");
-    ui->objClrWidget->setMinVal(0);
-    ui->objClrWidget->setMaxVal(1.0);
-    ui->objClrWidget->setEnabled(false);
+    ui->objClrWidget->setChecked(false);
+    ui->objClrWidget->setColor(Qt::green);
 
     ui->contourClrWidget->setTitle("Контур");
-    ui->contourClrWidget->setMinVal(0);
-    ui->contourClrWidget->setMaxVal(1.0);
-    ui->contourClrWidget->setEnabled(false);
+    ui->contourClrWidget->setChecked(false);
+    ui->contourClrWidget->setColor(Qt::red);
 }
 
 //Скейлинг и прочие действия с зумом
@@ -254,6 +251,7 @@ QString MainWindow::requiredPath(QDir currentDir, const QString &redirect)
 
 void MainWindow::updateAccessState(QAction *ac, QPushButton *bt, bool newEnableState, bool newCheckedState)
 {
+        //TODO: Опитимизировать изменение enabled \ disabled  интерфейс
     ac->setEnabled(newEnableState);
     bt->setEnabled(newEnableState);
 
@@ -263,6 +261,7 @@ void MainWindow::updateAccessState(QAction *ac, QPushButton *bt, bool newEnableS
 
 void MainWindow::updateAccessState(QAction *ac, QRadioButton *bt, bool newEnableState, bool newCheckedState)
 {
+        //TODO: Опитимизировать изменение enabled \ disabled  интерфейс
     ac->setEnabled(newEnableState);
     bt->setEnabled(newEnableState);
 
@@ -272,13 +271,14 @@ void MainWindow::updateAccessState(QAction *ac, QRadioButton *bt, bool newEnable
 
 Qt::AspectRatioMode MainWindow::checkedRatio()
 {
+    //TODO: Опитимизировать выбор типа ресайзинга картинки внутри виджета
     Qt::AspectRatioMode mode;
     if (ui->keepRatioBut->isChecked())
     {
         updateAccessState(ui->keepRatioAct, ui->keepRatioBut, true, true);
         updateAccessState(ui->ignoreRatioAct, ui->ignoreRatioBut, true, false);
         mode =  Qt::KeepAspectRatio;
-    } else if(ui->ignoreRatioBut->isChecked())
+    } else if( ui->ignoreRatioBut->isChecked())
     {
         updateAccessState(ui->ignoreRatioAct, ui->ignoreRatioBut, true, true);
         updateAccessState(ui->keepRatioAct, ui->keepRatioBut, true, false);
@@ -312,5 +312,41 @@ void MainWindow::on_zoomRatioSlider_valueChanged(int value)
     {
         setScaleCoeff(sameNonIntVal);
         ui->zoomSpinbox->setValue(sameNonIntVal);
+    }
+}
+
+//Файл атрибутов - парсинг .csv файла
+void MainWindow::on_openAttrAct_triggered(bool checked)
+{
+    updateAccessState(ui->openAttrAct, ui->openAttrBut, !checked, checked);
+
+    ui->tabWidget->setCurrentIndex(2);
+    csvModel = new QStandardItemModel(this);
+    csvModel->setColumnCount(18);
+    //TODO: добавить заголовки из проксирования
+    //csvModel->setHorizontalHeaderLabels(QStringList() << "Марка" << "Модель" << "Цена");
+    ui->tableView->setModel(csvModel);
+
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Select attributes file"), requiredPath(QDir::current(), EXTRA_ATTR_PATH), "CSV(*.csv)");
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qDebug() << file.errorString();
+    }else
+    {
+        QTextStream in(&file);
+        // Считываем данные до конца файла
+        while (!in.atEnd())
+        {
+        // ... построчно
+            QString line = in.readLine();
+            QList<QStandardItem *> standardItemsList;
+            for (QString item : line.split(";"))
+            {
+                standardItemsList.append(new QStandardItem(item));
+            }
+            csvModel->insertRow(csvModel->rowCount(), standardItemsList);
+            file.close();
+        }
     }
 }

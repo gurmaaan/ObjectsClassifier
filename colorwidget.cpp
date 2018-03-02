@@ -10,12 +10,12 @@ ColorWidget::ColorWidget(QWidget *parent) :
     ui(new Ui::ColorWidget)
 {
     ui->setupUi(this);
-    _min = 0.0;
-    _max = 1.0;
+    _min = 0;
+    _max = 255;
     _color = QColor(Qt::white);
 
     updateButtonStyleSheet(QColor(Qt::white));
-    setVal(getVal());
+    setAlpha(getAlpha());
     emit colorChenged(_color);
 }
 
@@ -36,28 +36,24 @@ void ColorWidget::setParamName(const QString name)
     ui->colorLabel->setText(name);
 }
 
-void ColorWidget::setMinVal(const double min)
+void ColorWidget::setMinAlpha(const int min)
 {
     _min = min;
-    ui->minLabel->setText(QString::number(min));
-    int sliderMin;
-    sliderMin = static_cast<int>(min*100);
-    ui->slider->setMinimum(sliderMin);
+    ui->minLabel->setText(QString::number(_min));
+    ui->slider->setMinimum(_min);
 }
 
-void ColorWidget::setMaxVal(const double max)
+void ColorWidget::setMaxAlpha(const int max)
 {
     _max = max;
     ui->maxLabel->setText(QString::number(max));
-    int sliderMax;
-    sliderMax = static_cast<int>(max*100);
-    ui->slider->setMaximum(sliderMax);
+    ui->slider->setMaximum(max);
 }
 
 void ColorWidget::on_groupBox_toggled(bool checked)
 {
-    double val = checked ? getMin() : getMax();
-    setVal(val);
+    int val = checked ? getMinAlpha() : getMaxAlpha();
+    setAlpha(val);
     ui->slider->setEnabled(checked);
     ui->colroButton->setEnabled(checked);
 }
@@ -65,10 +61,9 @@ void ColorWidget::on_groupBox_toggled(bool checked)
 void ColorWidget::on_colroButton_clicked()
 {
     QColor clr = QColorDialog::getColor(_color, this);
-    clr.setAlphaF(getVal());
-    _color = clr;
+    clr.setAlpha(ui->slider->value());
+    setColor(clr);
     updateButtonStyleSheet(_color);
-    emit colorChenged(clr);
 }
 
 QColor ColorWidget::getColor() const
@@ -76,46 +71,66 @@ QColor ColorWidget::getColor() const
     return _color;
 }
 
-double ColorWidget::getMax() const
+void ColorWidget::setColor(QColor value)
+{
+    _color = value;
+    emit colorChenged(_color);
+    qDebug() << "Color changed. (R ; G ; B ; A) : ("
+             << _color.red()    << " ; "
+             << _color.green()  << " ; "
+             << _color.blue()   << " ; "
+             << _color.alpha()  << " ).";
+}
+
+int ColorWidget::getMaxAlpha() const
 {
     return _max;
 }
 
-double ColorWidget::getMin() const
+int ColorWidget::getMinAlpha() const
 {
     return _min;
 }
 
-double ColorWidget::getVal()
+int ColorWidget::getAlpha()
 {
-    static double sliderVal = static_cast<double>(ui->slider->value()) / static_cast<double>(100);
-    setVal(sliderVal);
-    return _val;
+    return _alpha;
 }
 
-void ColorWidget::setVal(double val)
+void ColorWidget::setAlpha(int val)
 {
-    _val = val;
-    emit colorChenged(getColor());
-    int sliderVal;
-    sliderVal = static_cast<int>(val * 100);
-    _color.setAlpha(val);
-    ui->slider->setValue(sliderVal);
-
-    emit(colorChenged(_color));
+    if ( val >= 0 && val <=255)
+    {
+        _alpha = val;
+        ui->slider->setValue(_alpha);
+        _color.setAlpha(_alpha);
+        emit(colorChenged(_color));
+    } else {
+        _alpha = 0;
+        qDebug() << "Incorrect alpha value. Should be 0 for invisible and 255 for the color without opacity";
+    }
 }
 
 void ColorWidget::updateButtonStyleSheet(QColor newButtonCOlor)
 {
-    //BUG: разобраться с этой прозрачностью черт знает что во всем файле
     QString bgStyleSheet = QString(CLR_PCKR_STYLE) + newButtonCOlor.name();
     ui->colroButton->setStyleSheet(bgStyleSheet);
 }
 
 void ColorWidget::on_slider_sliderMoved(int position)
 {
-    //static qreal sliderVal = static_cast<qreal>(static_cast<qreal>(position) / static_cast<qreal>(100));
-    qDebug() << position <<_min << _max;
     _color.setAlpha(position);
+    setColor(_color);
     emit(colorChenged(_color));
+}
+
+bool ColorWidget::isChecked()
+{
+    return _checked && ui->groupBox->isChecked();
+}
+
+void ColorWidget::setChecked(bool checked)
+{
+    ui->groupBox->setChecked(checked);
+    _checked = checked;
 }
