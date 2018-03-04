@@ -1,5 +1,17 @@
 #include "datamodel.h"
 
+#ifndef ROOT_ITEM_SIZE
+#define ROOT_ITEM_SIZE QSize(200,30)
+#endif
+
+#ifndef META_ITEM_SIZE
+#define META_ITEM_SIZE QSize(150,30)
+#endif
+
+#ifndef POINT_IEM_SIZE
+#define POINT_IEM_SIZE QSize(100,30)
+#endif
+
 DataModel::DataModel(QObject *parent) : QObject(parent)
 {
     _objCount = 0;
@@ -14,49 +26,97 @@ QStandardItemModel *DataModel::initModel()
 {
     QStandardItemModel *model = new QStandardItemModel(0, 2);
 
-    model->setHeaderData(0, Qt::Horizontal, "Объект");
-    model->setHeaderData(1, Qt::Horizontal, "Атрибут");
+    QStringList modelHeaders;
+    modelHeaders << "Название атрибута" << "Значение";
+    model->setHorizontalHeaderLabels(modelHeaders);
+    _model = model;
+
     return model;
 }
 
 void DataModel::addObjectRootItem(QStandardItemModel *model, const Obj &ob)
 {
-    QString objHeaderText = "id: " + QString::number(ob.id());
-    QStandardItem *item = new QStandardItem(objHeaderText);
+    QStringList objStrList;
+    objStrList << "id: " << QString::number(ob.id());
 
-    //item->setCheckable(true);
-    item->setSizeHint(QSize(200, 30));
-    addMetaObjectItem(item, ob);
-    model->appendRow(item);
+    QStandardItem *objectRoot = new QStandardItem(0, 2);
+//    item->setText( "Объект " + QString::number( ob.id() ) );
+
+    //Добавление в корень строку id : номер
+    objectRoot = addMainHeadingItem(model, objStrList);
+
+    addMetaObjectItem(objectRoot, ob);
+    //model->appendRow();
+}
+
+//Добавление строки вида "название параметра" : "значение парметра" в качестве ребенка переданного item
+QStandardItem *DataModel::addHeadingItem(QStandardItem *parent, const QStringList &headerList)
+{
+    QList<QStandardItem*> itemsList;
+    foreach (QString itemText, headerList) {
+        QStandardItem *item = new QStandardItem(itemText);
+        itemsList.push_back(item);
+    }
+    parent->appendRow(itemsList);
+    return itemsList.first();
+}
+
+QStandardItem *DataModel::addIntegerItem(QStandardItem *parent, const QString &name, const int &value)
+{
+    QStringList itemsStringList;
+    itemsStringList << name << QString::number(value);
+
+    return addHeadingItem(parent, itemsStringList);
+}
+
+//Добавление строки вида "название параметра" : "значение парметра" в корень модели
+QStandardItem *DataModel::addMainHeadingItem(QStandardItemModel *parentModel, const QStringList& headerList)
+{
+    QList<QStandardItem*> itemsList;
+    foreach (QString itemText, headerList) {
+        QStandardItem *item = new QStandardItem(itemText);
+
+        QFont newFont(item->font());
+        newFont.setBold(true);
+        item->setFont(newFont);
+
+        item->setSizeHint(ROOT_ITEM_SIZE);
+
+        itemsList.push_back(item);
+    }
+    parentModel->appendRow(itemsList);
+
+    return itemsList.first();
 }
 
 void DataModel::addMetaObjectItem(QStandardItem *parent, const Obj &ob)
 {
-    QString intPointsCountStr = "Internal points count: " + QString::number(ob.getInternalPointsCount());
-    QStandardItem *intPointsCountItem = new QStandardItem(intPointsCountStr);
-    intPointsCountItem->setSizeHint(QSize(150, 30));
+    QStandardItem *intPointsCountItem = new QStandardItem();
+    intPointsCountItem = addIntegerItem(parent, "Внутренних точек: ", ob.getInternalPointsCount());
+    intPointsCountItem->setSizeHint(META_ITEM_SIZE);
     addPointsObjectItem(intPointsCountItem, ob.internalPoits());
 
-    QString contourPointsCountStr = "Contour points count: " + QString::number(ob.contourPointsCount());
-    QStandardItem *contourPointsItem = new QStandardItem(contourPointsCountStr);
-    contourPointsItem->setSizeHint(QSize(150, 30));
+    QStandardItem *contourPointsItem = new QStandardItem();
+    contourPointsItem = addIntegerItem(parent, "Контурных точек: ", ob.contourPointsCount() );
+    contourPointsItem->setSizeHint(META_ITEM_SIZE);
     addPointsObjectItem(contourPointsItem, ob.contourPointns());
-
-    QList<QStandardItem*> list;
-    list.push_back(contourPointsItem);
-    list.push_back(intPointsCountItem);
-    parent->appendRows(list);
 }
 
 void DataModel::addPointsObjectItem(QStandardItem *parentMetaItem, const QVector<QPoint> &points)
 {
-    QList<QStandardItem*> pointsList;
+    //TODO: сделать отображение в модели как отдельные числа а не строка
 
-    for(auto point : points) {
-       QString pointStr = "(" + QString::number(point.x()) + " ; " + QString::number(point.y()) + ")";
-       QStandardItem *pointItem = new QStandardItem(pointStr);
-       pointItem->setSizeHint(QSize(100, 30));
-       pointsList.push_back(pointItem);
+    QList<QStandardItem*> pointsList;
+    int i = 1; //введено т. к. операция взятия индекса очень долгая
+    for(auto point : points)
+    {
+        QString pointStr = "Точка: " + QString::number(i) +" : (" + QString::number(point.x()) + " ; " + QString::number(point.y()) + ")";
+        QStandardItem *pointItem = new QStandardItem(pointStr);
+        i++;
+        pointItem->setSizeHint(POINT_IEM_SIZE);
+        addIntegerItem(pointItem, "X: ", point.x() );
+        addIntegerItem(pointItem, "Y: ", point.y() );
+        pointsList.push_back(pointItem);
     }
 
     parentMetaItem->appendRows(pointsList);
