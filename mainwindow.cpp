@@ -3,8 +3,6 @@
 
 #include "const.h"
 
-//TODO: Поменять бесящий черный значок на белый
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -17,10 +15,11 @@ MainWindow::MainWindow(QWidget *parent) :
     viewer->setScene(scene);
 
     initColorWidgets();
+    showMaximized();
 
-    tabifyDockWidget(ui->view_dock, ui->dock_contour);
-    tabifyDockWidget(ui->view_dock, ui->object_dock);
-    tabifyDockWidget(ui->view_dock, ui->scale_dock);
+    //TODO : сделать активной первую табу с масштабом
+    tabifyDockWidget(ui->dock_scale, ui->dock_object);
+    tabifyDockWidget(ui->dock_scale, ui->dock_contour);
 
     connect(model, &DataModel::pathImgLoaded, ui->img_path_lineEdit, &QLineEdit::setText);
     connect(model, &DataModel::pathDataLoaded, ui->dataPathLineEdit, &QLineEdit::setText);
@@ -107,9 +106,9 @@ void MainWindow::on_closeAct_triggered(bool checked)
 //Открытие самого изображения
 void MainWindow::on_openImgAct_triggered(bool checked)
 {
-    updateAccessState(ui->openImgAct, ui->openImgBut, !checked, checked);
-    updateAccessState(ui->openDataAct, ui->openDataBut, checked);
-    updateAccessState(ui->closeAct, ui->closeBut, checked);
+    updateAccessState(ui->openImgAct, ui->openImgBut, false, true);
+    updateAccessState(ui->openDataAct, ui->openDataBut, true);
+    updateAccessState(ui->closeAct, ui->closeBut, true);
 
     ui->tabWidget->setCurrentIndex(0);
 
@@ -126,7 +125,7 @@ void MainWindow::on_openImgAct_triggered(bool checked)
         {
             updateViewer(QPixmap(fileName), ui->zoomSpinbox->value(), checkedRatio());
             model->setImage(fileName);
-            ui->view_dock->setEnabled(true);
+            ui->dock_scale->setEnabled(true);
 
             ui->tabWidget->setCurrentIndex(0);
         }
@@ -136,13 +135,11 @@ void MainWindow::on_openImgAct_triggered(bool checked)
 //Действие открытия файла с точками
 void MainWindow::on_openDataAct_triggered(bool checked)
 {
-
     //TODO: добавить иконки в качестве части изображения
-    updateAccessState(ui->openDataAct, ui->openDataBut, !checked, checked);
-    updateAccessState(ui->openAttrAct, ui->openAttrBut, checked);
-    ui->objectColorWidget->setEnabled(checked);
-    ui->contourColorWidget->setEnabled(checked);
-
+    updateAccessState(ui->openDataAct, ui->openDataBut, false, true);
+    updateAccessState(ui->openAttrAct, ui->openAttrBut, true);
+    ui->dock_contour->setEnabled(true);
+    ui->dock_object->setEnabled(true);
     ui->tabWidget->setCurrentIndex(1);
 
     QString fileName = QFileDialog::getOpenFileName(this,
@@ -161,9 +158,9 @@ void MainWindow::on_openDataAct_triggered(bool checked)
         {
             ui->dataFileProgressBar->setMaximum(model->objCount());
 
-            ui->treeView->setModel( model->getStandardItemtModel() );
-            ui->treeView->resizeColumnToContents(0);
-            ui->treeView->resizeColumnToContents(1);
+            ui->tree_data->setModel( model->getStandardItemtModel() );
+            ui->tree_data->resizeColumnToContents(0);
+            ui->tree_data->resizeColumnToContents(1);
 
             ui->dataFileProgressBar->setValue(model->objCount());
         }
@@ -213,7 +210,7 @@ void MainWindow::updateObjColor(QColor clr)
 
 void MainWindow::updateContourColor(QColor clr)
 {
-    qDebug() << "Updated contour Color: " << clr << ui->contourColorWidget->getColor();
+    //qDebug() << "Updated contour Color: " << clr << ui->contourColorWidget->getColor();
 }
 
 void MainWindow::on_zoomSpinbox_valueChanged(double newScaleCoeff)
@@ -256,7 +253,7 @@ QString MainWindow::requiredPath(QDir currentDir, const QString &redirect)
 
 void MainWindow::updateAccessState(QAction *ac, QPushButton *bt, bool newEnableState, bool newCheckedState)
 {
-        //TODO: Опитимизировать изменение enabled \ disabled  интерфейс
+        //TODO: Опитимизировать изменение enabled \ disabled  интерфейса (см метод ниже)
     ac->setEnabled(newEnableState);
     bt->setEnabled(newEnableState);
 
@@ -266,7 +263,6 @@ void MainWindow::updateAccessState(QAction *ac, QPushButton *bt, bool newEnableS
 
 void MainWindow::updateAccessState(QAction *ac, QRadioButton *bt, bool newEnableState, bool newCheckedState)
 {
-        //TODO: Опитимизировать изменение enabled \ disabled  интерфейс
     ac->setEnabled(newEnableState);
     bt->setEnabled(newEnableState);
 
@@ -358,5 +354,5 @@ void MainWindow::on_openAttrAct_triggered(bool checked)
 
 void MainWindow::on_contourWidthSlider_sliderMoved(int position)
 {
-
+    //TODO: Связать со слотом объекта
 }

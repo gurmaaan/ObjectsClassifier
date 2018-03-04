@@ -6,12 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1065</width>
-    <height>963</height>
+    <width>1011</width>
+    <height>1111</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Распределение объектов</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="sources.qrc">
+    <normaloff>:/icons/filter_icon.png</normaloff>:/icons/filter_icon.png</iconset>
   </property>
   <property name="toolButtonStyle">
    <enum>Qt::ToolButtonTextOnly</enum>
@@ -23,17 +27,23 @@
    <set>QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks|QMainWindow::GroupedDragging</set>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QHBoxLayout" name="horizontalLayout_10">
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
        <number>1</number>
       </property>
-      <widget class="QWidget" name="imgTab">
+      <property name="documentMode">
+       <bool>true</bool>
+      </property>
+      <property name="movable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="tab_img">
        <attribute name="title">
         <string>Изображение</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_11">
+       <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
@@ -60,52 +70,42 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="dataTab">
+      <widget class="QWidget" name="tab_data">
        <attribute name="title">
         <string>Данные</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_9">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <layout class="QHBoxLayout" name="horizontalLayout_12">
           <item>
-           <widget class="QLabel" name="dataPathLabel">
-            <property name="text">
-             <string>Путь:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="dataPathLineEdit"/>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_6">
-          <item>
-           <widget class="QLabel" name="dataObjCountLabel">
-            <property name="text">
-             <string>Количество:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QSpinBox" name="dataObjectsCountSpinBox">
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
-            <property name="buttonSymbols">
-             <enum>QAbstractSpinBox::NoButtons</enum>
-            </property>
-            <property name="suffix">
-             <string> шт</string>
-            </property>
-            <property name="maximum">
-             <number>100000</number>
-            </property>
-           </widget>
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <item>
+             <widget class="QLabel" name="dataObjCountLabel">
+              <property name="text">
+               <string>Количество:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="dataObjectsCountSpinBox">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+              <property name="buttonSymbols">
+               <enum>QAbstractSpinBox::NoButtons</enum>
+              </property>
+              <property name="suffix">
+               <string> шт</string>
+              </property>
+              <property name="maximum">
+               <number>100000</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
           <item>
            <widget class="QLabel" name="dataFileLoadingLabel">
@@ -144,7 +144,21 @@
          </layout>
         </item>
         <item>
-         <widget class="QTreeView" name="treeView">
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <item>
+           <widget class="QLabel" name="dataPathLabel">
+            <property name="text">
+             <string>Путь:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="dataPathLineEdit"/>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QTreeView" name="tree_data">
           <property name="minimumSize">
            <size>
             <width>750</width>
@@ -152,7 +166,7 @@
            </size>
           </property>
           <property name="sizeAdjustPolicy">
-           <enum>QAbstractScrollArea::AdjustIgnored</enum>
+           <enum>QAbstractScrollArea::AdjustToContents</enum>
           </property>
           <property name="tabKeyNavigation">
            <bool>true</bool>
@@ -167,6 +181,9 @@
            <bool>true</bool>
           </property>
           <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
+          <property name="animated">
            <bool>true</bool>
           </property>
           <attribute name="headerCascadingSectionResizes">
@@ -188,7 +205,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="attrTab">
+      <widget class="QWidget" name="tab_attribute">
        <attribute name="title">
         <string>Атрибуты</string>
        </attribute>
@@ -204,47 +221,6 @@
           </item>
           <item>
            <widget class="QLineEdit" name="attrPathLineEdit"/>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <spacer name="horizontalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QLabel" name="attrViewModeLabel">
-            <property name="text">
-             <string>Представление</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="attrTableViewRadio">
-            <property name="text">
-             <string>Таблица</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="attrTreeModelRadio">
-            <property name="text">
-             <string>Дерево</string>
-            </property>
-           </widget>
           </item>
          </layout>
         </item>
@@ -296,6 +272,47 @@
          </layout>
         </item>
         <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QLabel" name="attrViewModeLabel">
+            <property name="text">
+             <string>Представление</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="attrTableViewRadio">
+            <property name="text">
+             <string>Таблица</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="attrTreeModelRadio">
+            <property name="text">
+             <string>Дерево</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
          <widget class="QTableView" name="attrTbleView"/>
         </item>
        </layout>
@@ -304,55 +321,59 @@
        <attribute name="title">
         <string>Гистограммы</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_5">
-        <item>
-         <widget class="QScrollArea" name="scrollArea">
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOn</enum>
-          </property>
-          <property name="sizeAdjustPolicy">
-           <enum>QAbstractScrollArea::AdjustToContents</enum>
-          </property>
-          <property name="widgetResizable">
-           <bool>true</bool>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignHCenter|Qt::AlignTop</set>
-          </property>
-          <widget class="QWidget" name="scrollAreaWidgetContents">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>731</width>
-             <height>878</height>
-            </rect>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_6">
-            <item>
-             <widget class="QStackedWidget" name="stackedWidget">
-              <widget class="QWidget" name="page">
-               <layout class="QVBoxLayout" name="verticalLayout_7">
-                <item>
-                 <widget class="QCustomPlot" name="widget" native="true">
-                  <property name="enabled">
-                   <bool>false</bool>
-                  </property>
-                  <property name="autoFillBackground">
-                   <bool>false</bool>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-              <widget class="QWidget" name="page_2"/>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </widget>
-        </item>
-       </layout>
+       <widget class="QScrollArea" name="scrollArea">
+        <property name="geometry">
+         <rect>
+          <x>9</x>
+          <y>9</y>
+          <width>55</width>
+          <height>48</height>
+         </rect>
+        </property>
+        <property name="verticalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOn</enum>
+        </property>
+        <property name="sizeAdjustPolicy">
+         <enum>QAbstractScrollArea::AdjustToContents</enum>
+        </property>
+        <property name="widgetResizable">
+         <bool>true</bool>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignHCenter|Qt::AlignTop</set>
+        </property>
+        <widget class="QWidget" name="scrollAreaWidgetContents">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>36</width>
+           <height>46</height>
+          </rect>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
+           <widget class="QStackedWidget" name="stackedWidget">
+            <widget class="QWidget" name="page">
+             <layout class="QVBoxLayout" name="verticalLayout_7">
+              <item>
+               <widget class="QCustomPlot" name="widget" native="true">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="autoFillBackground">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="page_2"/>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
       </widget>
      </widget>
     </item>
@@ -363,7 +384,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1065</width>
+     <width>1011</width>
      <height>21</height>
     </rect>
    </property>
@@ -376,6 +397,8 @@
     <addaction name="openAttrAct"/>
     <addaction name="separator"/>
     <addaction name="closeAct"/>
+    <addaction name="separator"/>
+    <addaction name="appQuitAct"/>
    </widget>
    <widget class="QMenu" name="viewMenu">
     <property name="title">
@@ -390,12 +413,15 @@
    <addaction name="fileMenu"/>
    <addaction name="viewMenu"/>
   </widget>
-  <widget class="QDockWidget" name="file_dock">
-   <property name="minimumSize">
-    <size>
-     <width>236</width>
-     <height>207</height>
-    </size>
+  <widget class="QDockWidget" name="dock_file">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
    </property>
    <property name="floating">
     <bool>false</bool>
@@ -412,7 +438,7 @@
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
-   <widget class="QWidget" name="fileDockContent">
+   <widget class="QWidget" name="dock_file_content">
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
       <widget class="QCommandLinkButton" name="openImgBut">
@@ -504,10 +530,32 @@
        </property>
       </widget>
      </item>
+     <item>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
     </layout>
+    <zorder>openImgBut</zorder>
+    <zorder>openDataBut</zorder>
+    <zorder>line</zorder>
+    <zorder>closeBut</zorder>
+    <zorder>openAttrBut</zorder>
+    <zorder>verticalSpacer</zorder>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="view_dock">
+  <widget class="QDockWidget" name="dock_scale">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="features">
     <set>QDockWidget::DockWidgetMovable</set>
    </property>
@@ -515,371 +563,358 @@
     <set>Qt::LeftDockWidgetArea</set>
    </property>
    <property name="windowTitle">
-    <string>Отображение</string>
+    <string>Масштаб</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents">
-    <layout class="QVBoxLayout" name="verticalLayout_14">
+   <widget class="QWidget" name="dock_scale_content">
+    <layout class="QVBoxLayout" name="verticalLayout_8">
      <item>
-      <widget class="QDockWidget" name="scale_dock">
-       <property name="enabled">
-        <bool>false</bool>
+      <widget class="QGroupBox" name="ratioGroupBox">
+       <property name="title">
+        <string>Пропорции изображения</string>
        </property>
-       <property name="minimumSize">
-        <size>
-         <width>254</width>
-         <height>149</height>
-        </size>
+       <layout class="QVBoxLayout" name="verticalLayout_11">
+        <item>
+         <widget class="QRadioButton" name="ignoreRatioBut">
+          <property name="text">
+           <string>Вписать</string>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="keepRatioBut">
+          <property name="text">
+           <string>Сохранить исходныне</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="zoomGropBox">
+       <property name="title">
+        <string>Трансформация</string>
        </property>
-       <property name="features">
-        <set>QDockWidget::DockWidgetMovable</set>
-       </property>
-       <property name="allowedAreas">
-        <set>Qt::LeftDockWidgetArea</set>
-       </property>
-       <property name="windowTitle">
-        <string>Масштаб</string>
-       </property>
-       <widget class="QWidget" name="scale_dock_content">
-        <layout class="QVBoxLayout" name="verticalLayout_8">
-         <item>
-          <widget class="QGroupBox" name="ratioGroupBox">
-           <property name="title">
-            <string>Пропорции изображения</string>
-           </property>
-           <widget class="QRadioButton" name="ignoreRatioBut">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>23</y>
-              <width>64</width>
-              <height>17</height>
-             </rect>
-            </property>
+       <layout class="QVBoxLayout" name="verticalLayout_10">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QLabel" name="zoomSliderMinus">
             <property name="text">
-             <string>Вписать</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;-&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
-            <property name="checked">
-             <bool>false</bool>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="buddy">
+             <cstring>zoomRatioSlider</cstring>
             </property>
            </widget>
-           <widget class="QRadioButton" name="keepRatioBut">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>46</y>
-              <width>137</width>
-              <height>17</height>
-             </rect>
+          </item>
+          <item>
+           <widget class="QSlider" name="zoomRatioSlider">
+            <property name="minimum">
+             <number>1</number>
             </property>
+            <property name="maximum">
+             <number>500</number>
+            </property>
+            <property name="singleStep">
+             <number>1</number>
+            </property>
+            <property name="pageStep">
+             <number>50</number>
+            </property>
+            <property name="value">
+             <number>100</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="tickPosition">
+             <enum>QSlider::TicksBelow</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="zoomSliderPluse">
             <property name="text">
-             <string>Сохранить исходныне</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;+&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
-            <property name="checked">
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="buddy">
+             <cstring>zoomRatioSlider</cstring>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QLabel" name="zommRatioLabel">
+            <property name="text">
+             <string>Scale</string>
+            </property>
+            <property name="buddy">
+             <cstring>zoomSpinbox</cstring>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QDoubleSpinBox" name="zoomSpinbox">
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="readOnly">
              <bool>true</bool>
             </property>
+            <property name="buttonSymbols">
+             <enum>QAbstractSpinBox::NoButtons</enum>
+            </property>
+            <property name="minimum">
+             <double>0.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>5.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.010000000000000</double>
+            </property>
+            <property name="value">
+             <double>1.000000000000000</double>
+            </property>
            </widget>
-          </widget>
-         </item>
-         <item>
-          <widget class="QGroupBox" name="zoomGropBox">
-           <property name="title">
-            <string>Трансформация</string>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_10">
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_3">
-              <item>
-               <widget class="QLabel" name="zoomSliderMinus">
-                <property name="text">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;-&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-                <property name="buddy">
-                 <cstring>zoomRatioSlider</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QSlider" name="zoomRatioSlider">
-                <property name="minimum">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <number>500</number>
-                </property>
-                <property name="singleStep">
-                 <number>1</number>
-                </property>
-                <property name="pageStep">
-                 <number>50</number>
-                </property>
-                <property name="value">
-                 <number>100</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="tickPosition">
-                 <enum>QSlider::TicksBelow</enum>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="zoomSliderPluse">
-                <property name="text">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;+&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-                <property name="buddy">
-                 <cstring>zoomRatioSlider</cstring>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_4">
-              <item>
-               <widget class="QLabel" name="zommRatioLabel">
-                <property name="text">
-                 <string>Scale</string>
-                </property>
-                <property name="buddy">
-                 <cstring>zoomSpinbox</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_2">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <widget class="QDoubleSpinBox" name="zoomSpinbox">
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-                <property name="readOnly">
-                 <bool>true</bool>
-                </property>
-                <property name="buttonSymbols">
-                 <enum>QAbstractSpinBox::NoButtons</enum>
-                </property>
-                <property name="minimum">
-                 <double>0.000000000000000</double>
-                </property>
-                <property name="maximum">
-                 <double>5.000000000000000</double>
-                </property>
-                <property name="singleStep">
-                 <double>0.010000000000000</double>
-                </property>
-                <property name="value">
-                 <double>1.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </widget>
-         </item>
-        </layout>
-       </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
       </widget>
      </item>
      <item>
-      <widget class="QDockWidget" name="object_dock">
-       <property name="enabled">
-        <bool>false</bool>
+      <spacer name="verticalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
        </property>
-       <property name="minimumSize">
+       <property name="sizeHint" stdset="0">
         <size>
-         <width>218</width>
-         <height>165</height>
+         <width>20</width>
+         <height>40</height>
         </size>
        </property>
-       <property name="floating">
+      </spacer>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dock_object">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Объект</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dock_object_content">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="ColorWidget" name="objectColorWidget" native="true">
+       <property name="minimumSize">
+        <size>
+         <width>200</width>
+         <height>125</height>
+        </size>
+       </property>
+       <property name="autoFillBackground">
         <bool>true</bool>
        </property>
-       <property name="features">
-        <set>QDockWidget::DockWidgetMovable</set>
-       </property>
-       <property name="allowedAreas">
-        <set>Qt::LeftDockWidgetArea</set>
-       </property>
-       <property name="windowTitle">
-        <string>Объект</string>
-       </property>
-       <widget class="QWidget" name="object_dock_content">
-        <layout class="QVBoxLayout" name="verticalLayout_12">
-         <item>
-          <widget class="ColorWidget" name="objectColorWidget" native="true">
-           <property name="minimumSize">
-            <size>
-             <width>200</width>
-             <height>125</height>
-            </size>
-           </property>
-           <property name="autoFillBackground">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
       </widget>
      </item>
      <item>
-      <widget class="QDockWidget" name="dock_contour">
-       <property name="minimumSize">
+      <spacer name="verticalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
         <size>
-         <width>218</width>
-         <height>233</height>
+         <width>20</width>
+         <height>40</height>
         </size>
        </property>
-       <property name="features">
-        <set>QDockWidget::DockWidgetMovable</set>
+      </spacer>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dock_contour">
+   <property name="features">
+    <set>QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Контур</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dock_contour_content">
+    <layout class="QVBoxLayout" name="verticalLayout_13">
+     <item>
+      <widget class="QGroupBox" name="contour_width_box">
+       <property name="title">
+        <string>Толщина</string>
        </property>
-       <property name="allowedAreas">
-        <set>Qt::LeftDockWidgetArea</set>
-       </property>
-       <property name="windowTitle">
-        <string>Контур</string>
-       </property>
-       <widget class="QWidget" name="dock_contour_content">
-        <layout class="QVBoxLayout" name="verticalLayout_13">
-         <item>
-          <widget class="QGroupBox" name="contour_width_box">
-           <property name="title">
-            <string>Толщина</string>
-           </property>
-           <layout class="QHBoxLayout" name="horizontalLayout_8">
+       <layout class="QVBoxLayout" name="verticalLayout_12">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_7">
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_7">
-              <item>
-               <widget class="QLabel" name="contourWidthMinLabel">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="contextMenuPolicy">
-                 <enum>Qt::NoContextMenu</enum>
-                </property>
-                <property name="text">
-                 <string>1</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-                <property name="buddy">
-                 <cstring>contourWidthSlider</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QSlider" name="contourWidthSlider">
-                <property name="maximum">
-                 <number>10</number>
-                </property>
-                <property name="pageStep">
-                 <number>2</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="tickPosition">
-                 <enum>QSlider::TicksBelow</enum>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="contourWidthMaxLabel">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="contextMenuPolicy">
-                 <enum>Qt::NoContextMenu</enum>
-                </property>
-                <property name="text">
-                 <string>10</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-                <property name="buddy">
-                 <cstring>contourWidthSpin</cstring>
-                </property>
-               </widget>
-              </item>
-             </layout>
+             <widget class="QLabel" name="contourWidthMinLabel">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="contextMenuPolicy">
+               <enum>Qt::NoContextMenu</enum>
+              </property>
+              <property name="text">
+               <string>1</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+              <property name="buddy">
+               <cstring>contourWidthSlider</cstring>
+              </property>
+             </widget>
             </item>
             <item>
-             <widget class="QSpinBox" name="contourWidthSpin">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-              <property name="buttonSymbols">
-               <enum>QAbstractSpinBox::NoButtons</enum>
-              </property>
-              <property name="showGroupSeparator" stdset="0">
-               <bool>false</bool>
-              </property>
-              <property name="suffix">
-               <string> px</string>
-              </property>
-              <property name="minimum">
-               <number>1</number>
-              </property>
+             <widget class="QSlider" name="contourWidthSlider">
               <property name="maximum">
                <number>10</number>
               </property>
-              <property name="value">
-               <number>1</number>
+              <property name="pageStep">
+               <number>2</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="tickPosition">
+               <enum>QSlider::TicksBelow</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="contourWidthMaxLabel">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="contextMenuPolicy">
+               <enum>Qt::NoContextMenu</enum>
+              </property>
+              <property name="text">
+               <string>10</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+              <property name="buddy">
+               <cstring>contourWidthSpin</cstring>
               </property>
              </widget>
             </item>
            </layout>
-          </widget>
-         </item>
-         <item>
-          <widget class="ColorWidget" name="contourColorWidget" native="true">
-           <property name="minimumSize">
-            <size>
-             <width>200</width>
-             <height>125</height>
-            </size>
-           </property>
-           <property name="autoFillBackground">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="contourWidthSpin">
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+            <property name="buttonSymbols">
+             <enum>QAbstractSpinBox::NoButtons</enum>
+            </property>
+            <property name="showGroupSeparator" stdset="0">
+             <bool>false</bool>
+            </property>
+            <property name="suffix">
+             <string> px</string>
+            </property>
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>10</number>
+            </property>
+            <property name="value">
+             <number>1</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="ColorWidget" name="contourColorWidget" native="true"/>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>104</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
       </widget>
      </item>
     </layout>
@@ -990,7 +1025,7 @@
     <string>Увеличить</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+=</string>
+    <string>Ctrl+-</string>
    </property>
   </action>
   <action name="zoomOutAct">
@@ -1002,11 +1037,22 @@
     <string>Уменьшить</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+-</string>
+    <string>Ctrl+=</string>
    </property>
   </action>
-  <zorder>file_dock</zorder>
-  <zorder>view_dock</zorder>
+  <action name="appQuitAct">
+   <property name="icon">
+    <iconset resource="sources.qrc">
+     <normaloff>:/icons/quit_app_icon.png</normaloff>:/icons/quit_app_icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Выход</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <zorder>dock_file</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -1056,6 +1102,22 @@
     <hint type="destinationlabel">
      <x>967</x>
      <y>844</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>appQuitAct</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>505</x>
+     <y>555</y>
     </hint>
    </hints>
   </connection>

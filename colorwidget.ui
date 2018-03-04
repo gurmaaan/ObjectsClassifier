@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>201</width>
-    <height>125</height>
+    <width>200</width>
+    <height>131</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -22,14 +22,14 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QHBoxLayout" name="horizontalLayout_2">
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="enabled">
       <bool>true</bool>
      </property>
      <property name="title">
-      <string>Цвет и прозрачность</string>
+      <string>Отображение</string>
      </property>
      <property name="flat">
       <bool>false</bool>
@@ -40,15 +40,28 @@
      <property name="checked">
       <bool>false</bool>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <layout class="QHBoxLayout" name="colorLayout">
         <item>
          <widget class="QLabel" name="colorLabel">
           <property name="text">
-           <string>Цвет отображения</string>
+           <string>Цвет</string>
           </property>
          </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
         </item>
         <item>
          <widget class="QPushButton" name="colroButton">
@@ -77,19 +90,36 @@ background-color: rgb(167, 252, 186);</string>
           <property name="autoRepeat">
            <bool>false</bool>
           </property>
-          <property name="flat">
-           <bool>true</bool>
-          </property>
          </widget>
         </item>
        </layout>
       </item>
       <item>
-       <widget class="QLabel" name="opacityLabel">
-        <property name="text">
-         <string>Прозрачность:</string>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="opacityLabel">
+          <property name="text">
+           <string>Прозрачность:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="spinBox">
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+          <property name="buttonSymbols">
+           <enum>QAbstractSpinBox::NoButtons</enum>
+          </property>
+          <property name="minimum">
+           <number>0</number>
+          </property>
+          <property name="maximum">
+           <number>255</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item>
        <layout class="QHBoxLayout" name="opacityLayout">
@@ -155,5 +185,22 @@ background-color: rgb(167, 252, 186);</string>
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>slider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>64</x>
+     <y>99</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>113</x>
+     <y>70</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

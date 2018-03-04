@@ -17,7 +17,9 @@
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QVector>
+#include <QFont>
 
+//TODO : Поправить сортировку чисел (вопрос на стековерфлоу)
 class DataModel : public QObject
 {
     Q_OBJECT
@@ -67,6 +69,9 @@ private:
     QStandardItemModel *_model;
     QStandardItemModel *initModel();
     void addObjectRootItem(QStandardItemModel *model, const Obj& ob);
+    QStandardItem *addHeadingItem(QStandardItem *parent, const QStringList& headerList);
+    QStandardItem *addIntegerItem(QStandardItem *parent, const QString& name, const int& value);
+    QStandardItem *addMainHeadingItem(QStandardItemModel *parentModel, const QStringList& headerList);
     void addMetaObjectItem(QStandardItem *parentObj, const Obj& ob);
     void addPointsObjectItem(QStandardItem *parentMetaItem, const QVector<QPoint> &points);
 public slots:
