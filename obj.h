@@ -7,18 +7,22 @@
 #include <QDebug>
 #include <QDataStream>
 #include <QPolygon>
+#include <QGraphicsPolygonItem>
 #include <QPen>
 #include <QBrush>
+#include <QIcon>
+#include <QGraphicsPixmapItem>
 
-//2 - в объекте прописать методы возвращающие полигоны, кисти, цвета и тд
-//3 - в моделе прописать создание полигон айтемов, формирование вектора полигон айтемов и их апдейт по сигналам главного окна
-//4 - в главном окне прописать метод обновления сцены = вьюхи по сигналам обновления из модели
-//5 - проксирование по коду параметра всех нужных объектов
-//6 - сверка атрибутов с данными и их мерж
-//7 - кастомный виджет с 3-мя гистограммами и инфой
-
-//8 фильтрация
-//9 группировка
+//TODO:1 - переименовать понятие атрибут в объект
+//TODO:2 - в объекте прописать методы возвращающие полигоны, кисти, цвета и тд
+//TODO:3 - в моделе прописать создание полигон айтемов, формирование вектора полигон айтемов и их апдейт по сигналам главного окна
+//TODO:4 - в главном окне прописать метод обновления сцены = вьюхи по сигналам обновления из модели
+//TODO:5 - проксирование по коду параметра всех нужных объектов
+//TODO:6 - сверка атрибутов с данными и их мерж
+//TODO:7 - кастомный виджет с 3-мя гистограммами и инфой
+//TODO:
+//TODO:8 фильтрация
+//TODO:9 группировка
 enum class Attribute
 {
     //Яркостные признаки 0-2. Средняя яркость по компонентам
@@ -70,7 +74,7 @@ public:
     //Хеширование (получене уникального числа для объекта) по id. id <==> primary key
     inline uint qHash(const Obj &ob);
 
-    QVector<QPoint> internalPoits() const;
+    QVector<QPoint> getInternalPoits() const;
     void setInternalPoits(const QVector<QPoint> &internalPoits);
 
     QVector<QPoint> contourPointns() const;
@@ -91,26 +95,28 @@ public:
     int contourPointsCount() const;
     void setContourPointsCount(int contourPointsCount);
 
-    QColor getInternalObjectColor() const;
-    void setInternalObjectColor(const QColor &internalObjColor);
+    //---------------------------------------------------
+    QColor getInternalColor();
+    void setInternalColor(QColor &internalColor);
 
-    QColor getContourColor() const;
-    void setContourColor(const QColor &contourColor);
+    QColor getContourColor();
+    void setContourColor(QColor &contourColor);
 
-    int getContourWidth() const;
+    int getContourWidth();
     void setContourWidth(int contourWidth);
 
-    QBrush getInternalBrush() const;
-    void setInternalBrush(const QBrush &internalBrush);
+    QBrush getInternalBrush();
+    void setInternalBrush(QBrush &internalBrush);
 
-    QPolygonF getInternalPolygonF() const;
-    void setInternalPolygonF(const QPolygonF &internalPolygonF);
+    QPen getContourPen();
+    void setContourPen(QPen &contourPen);
 
-    QPen getContourPen() const;
-    void setContourPen(const QPen &contourPen);
+//    QPolygonF getContourPolygonF();
+//    QPolygonF getInternalPolygonF();
 
-    QPolygonF getContourPolygonF() const;
-    void setContourPolygonF(const QPolygonF &contourPolygonF);
+    //когда уже заполнено, просто гетер
+    QGraphicsPolygonItem *getContourPolyItem();
+    QGraphicsPolygonItem *getInternalPolyItem();
 
 private:
     int _id;
@@ -120,14 +126,20 @@ private:
     QVector<QPoint> _internalPoints;
     QVector<QPoint> _contourPoints;
 
+    //Отображение внутренних точек
     QColor _internalColor;
-    QBrush _internalBrush;
-    QPolygonF _internalPolygonF;
+    QPixmap _internalPixmap;
 
+    //Отображение контурных точек
     QColor _contourColor;
-    QPen _contourPen;
     int _contourWidth;
-    QPolygonF _contourPolygonF;
+    QGraphicsPolygonItem *_contourPolyItem;
+
+    QVector<QPointF> convertToF(QVector<QPoint> &vectorI);
+
+    //Создаем сами объекты, сетапим точки, сетапим цвет и кисть
+    QGraphicsPolygonItem *initInternalPolyItem(QVector<QPoint> &vectorI);
+    QGraphicsPolygonItem *initContourPolyItem(QVector<QPoint> &vectorI);
 };
 
 Q_DECLARE_METATYPE(Obj);

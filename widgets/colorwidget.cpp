@@ -132,5 +132,6 @@ bool ColorWidget::isChecked()
 void ColorWidget::setChecked(bool checked)
 {
     ui->groupBox->setChecked(checked);
+    emit viewStateChanged(checked);
     _checked = checked;
 }

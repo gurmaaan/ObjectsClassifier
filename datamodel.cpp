@@ -8,8 +8,8 @@
 #define META_ITEM_SIZE QSize(150,30)
 #endif
 
-#ifndef POINT_IEM_SIZE
-#define POINT_IEM_SIZE QSize(100,30)
+#ifndef POINT_ITEM_SIZE
+#define POINT_ITEM_SIZE QSize(100,30)
 #endif
 
 DataModel::DataModel(QObject *parent) : QObject(parent)
@@ -40,6 +40,7 @@ void DataModel::addObjectRootItem(QStandardItemModel *model, const Obj &ob)
     objStrList << "id: " << QString::number(ob.id());
 
     QStandardItem *objectRoot = new QStandardItem(0, 2);
+
 //    item->setText( "Объект " + QString::number( ob.id() ) );
 
     //Добавление в корень строку id : номер
@@ -94,7 +95,7 @@ void DataModel::addMetaObjectItem(QStandardItem *parent, const Obj &ob)
     QStandardItem *intPointsCountItem = new QStandardItem();
     intPointsCountItem = addIntegerItem(parent, "Внутренних точек: ", ob.getInternalPointsCount());
     intPointsCountItem->setSizeHint(META_ITEM_SIZE);
-    addPointsObjectItem(intPointsCountItem, ob.internalPoits());
+    addPointsObjectItem(intPointsCountItem, ob.getInternalPoits());
 
     QStandardItem *contourPointsItem = new QStandardItem();
     contourPointsItem = addIntegerItem(parent, "Контурных точек: ", ob.contourPointsCount() );
@@ -113,7 +114,7 @@ void DataModel::addPointsObjectItem(QStandardItem *parentMetaItem, const QVector
         QString pointStr = "Точка: " + QString::number(i) +" : (" + QString::number(point.x()) + " ; " + QString::number(point.y()) + ")";
         QStandardItem *pointItem = new QStandardItem(pointStr);
         i++;
-        pointItem->setSizeHint(POINT_IEM_SIZE);
+        pointItem->setSizeHint(POINT_ITEM_SIZE);
         addIntegerItem(pointItem, "X: ", point.x() );
         addIntegerItem(pointItem, "Y: ", point.y() );
         pointsList.push_back(pointItem);
@@ -137,10 +138,17 @@ QString DataModel::dataFilePath() const
     return _dataFilePath;
 }
 
+void DataModel::resizeHeaderItem(int newWidth)
+{
+    //TODO: Выравнивание ширины строк по ширине виджета
+    //this->getStandardItemtModel()->ro
+}
+
 void DataModel::pushObject(Obj &ob)
 {
     _objectsOnImage.append(ob);
     //qDebug() << ob;
+
     addObjectRootItem(_model, ob);
 }
 
@@ -160,6 +168,16 @@ void DataModel::setDataFilePath(const QString &dataFilePath)
 QVector<Obj> DataModel::getObjectsOnImage() const
 {
     return _objectsOnImage;
+}
+
+//Слот реагирующий на сигнал виджета отображения объектов
+//Если приъходит истина, посылает виджету главного окна QGraphicsPolygonItem сигнал обновления вьювера с ново   й сцйеной
+void DataModel::setObjectsVisible(bool state)
+{
+    if (state && !_objectsOnImage.isEmpty())
+    {
+       // foreach (auto)
+    }
 }
 
 QString DataModel::imageFilePath() const

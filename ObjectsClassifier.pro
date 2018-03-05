@@ -31,15 +31,17 @@ SOURCES += \
     external/qcustomplot.cpp \
     obj.cpp \
     datamodel.cpp \
-    colorwidget.cpp
+    widgets/colorwidget.cpp \
+    widgets/imagesizeviewer.cpp
 
 HEADERS += \
         mainwindow.h \
     external/qcustomplot.h \
     obj.h \
     datamodel.h \
-    colorwidget.h \
-    const.h
+    widgets/colorwidget.h \
+    const.h \
+    widgets/imagesizeviewer.h
 
 RESOURCES += \
         sources.qrc
@@ -48,4 +50,5 @@ win32: RC_FILE = iconsource.rc
 
 FORMS += \
         mainwindow.ui \
-    colorwidget.ui
+    widgets/colorwidget.ui \
+    widgets/imagesizeviewer.ui

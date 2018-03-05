@@ -14,7 +14,7 @@
    <string>Распределение объектов</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="sources.qrc">
+   <iconset>
     <normaloff>:/icons/filter_icon.png</normaloff>:/icons/filter_icon.png</iconset>
   </property>
   <property name="toolButtonStyle">
@@ -31,7 +31,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <property name="documentMode">
        <bool>true</bool>
@@ -43,30 +43,47 @@
        <attribute name="title">
         <string>Изображение</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_5">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
+         <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout">
-            <item>
-             <widget class="QLabel" name="img_path_label">
-              <property name="text">
-               <string>Путь:</string>
-              </property>
-              <property name="buddy">
-               <cstring>img_path_lineEdit</cstring>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="img_path_lineEdit"/>
-            </item>
-           </layout>
+           <widget class="QLabel" name="img_path_label">
+            <property name="text">
+             <string>Путь:</string>
+            </property>
+            <property name="buddy">
+             <cstring>img_path_lineEdit</cstring>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QGraphicsView" name="graphicsView"/>
+           <widget class="QLineEdit" name="img_path_lineEdit"/>
           </item>
          </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_13">
+          <item>
+           <widget class="ImageSizeViewer" name="imageSizeWidget" native="true">
+            <property name="minimumSize">
+             <size>
+              <width>400</width>
+              <height>0</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton">
+            <property name="text">
+             <string>PushButton</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QGraphicsView" name="graphicsView"/>
         </item>
        </layout>
       </widget>
@@ -205,9 +222,9 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_attribute">
+      <widget class="QWidget" name="tab_descriptors">
        <attribute name="title">
-        <string>Атрибуты</string>
+        <string>Дескрипторы</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
@@ -410,8 +427,18 @@
     <addaction name="zoomInAct"/>
     <addaction name="zoomOutAct"/>
    </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>О программе</string>
+    </property>
+    <addaction name="userManualAct"/>
+    <addaction name="developerManualAct"/>
+    <addaction name="separator"/>
+    <addaction name="fileReferenceAct"/>
+   </widget>
    <addaction name="fileMenu"/>
    <addaction name="viewMenu"/>
+   <addaction name="menu"/>
   </widget>
   <widget class="QDockWidget" name="dock_file">
    <property name="sizePolicy">
@@ -446,7 +473,7 @@
         <string>Открыть изображение</string>
        </property>
        <property name="icon">
-        <iconset resource="sources.qrc">
+        <iconset>
          <normaloff>:/icons/open_image_ic.png</normaloff>:/icons/open_image_ic.png</iconset>
        </property>
        <property name="checkable">
@@ -466,7 +493,7 @@
         <string>Открыть файл данных</string>
        </property>
        <property name="icon">
-        <iconset resource="sources.qrc">
+        <iconset>
          <normaloff>:/icons/add_param_ic.png</normaloff>:/icons/add_param_ic.png</iconset>
        </property>
        <property name="checkable">
@@ -492,7 +519,7 @@
         <string>Открыть атрибуты</string>
        </property>
        <property name="icon">
-        <iconset resource="sources.qrc">
+        <iconset>
          <normaloff>:/icons/view_groups_objects_ic.png</normaloff>:/icons/view_groups_objects_ic.png</iconset>
        </property>
        <property name="checkable">
@@ -519,7 +546,7 @@
         <string>Закрыть</string>
        </property>
        <property name="icon">
-        <iconset resource="sources.qrc">
+        <iconset>
          <normaloff>:/icons/delete_groups_object_ic.png</normaloff>:/icons/delete_groups_object_ic.png</iconset>
        </property>
        <property name="checkable">
@@ -925,7 +952,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="sources.qrc">
+    <iconset>
      <normaloff>:/icons/add_param_ic.png</normaloff>:/icons/add_param_ic.png</iconset>
    </property>
    <property name="text">
@@ -943,7 +970,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="sources.qrc">
+    <iconset>
      <normaloff>:/icons/open_image_ic.png</normaloff>:/icons/open_image_ic.png</iconset>
    </property>
    <property name="text">
@@ -961,7 +988,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="sources.qrc">
+    <iconset>
      <normaloff>:/icons/view_groups_objects_ic.png</normaloff>:/icons/view_groups_objects_ic.png</iconset>
    </property>
    <property name="text">
@@ -973,7 +1000,7 @@
   </action>
   <action name="closeAct">
    <property name="icon">
-    <iconset resource="sources.qrc">
+    <iconset>
      <normaloff>:/icons/delete_groups_object_ic.png</normaloff>:/icons/delete_groups_object_ic.png</iconset>
    </property>
    <property name="text">
@@ -991,7 +1018,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="sources.qrc">
+    <iconset>
      <normaloff>:/icons/open_dataFile_ic.png</normaloff>:/icons/open_dataFile_ic.png</iconset>
    </property>
    <property name="text">
@@ -1006,7 +1033,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="sources.qrc">
+    <iconset>
      <normaloff>:/icons/full_screen_ic.png</normaloff>:/icons/full_screen_ic.png</iconset>
    </property>
    <property name="text">
@@ -1018,7 +1045,7 @@
   </action>
   <action name="zoomInAct">
    <property name="icon">
-    <iconset resource="sources.qrc">
+    <iconset>
      <normaloff>:/icons/zoomInIcon.png</normaloff>:/icons/zoomInIcon.png</iconset>
    </property>
    <property name="text">
@@ -1030,7 +1057,7 @@
   </action>
   <action name="zoomOutAct">
    <property name="icon">
-    <iconset resource="sources.qrc">
+    <iconset>
      <normaloff>:/icons/zoomOutIcon.png</normaloff>:/icons/zoomOutIcon.png</iconset>
    </property>
    <property name="text">
@@ -1042,7 +1069,7 @@
   </action>
   <action name="appQuitAct">
    <property name="icon">
-    <iconset resource="sources.qrc">
+    <iconset>
      <normaloff>:/icons/quit_app_icon.png</normaloff>:/icons/quit_app_icon.png</iconset>
    </property>
    <property name="text">
@@ -1050,6 +1077,42 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="userManualAct">
+   <property name="icon">
+    <iconset resource="sources.qrc">
+     <normaloff>:/file/icons/user_manual_ic.png</normaloff>:/file/icons/user_manual_ic.png</iconset>
+   </property>
+   <property name="text">
+    <string>Руководство пользователя</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="developerManualAct">
+   <property name="icon">
+    <iconset resource="sources.qrc">
+     <normaloff>:/file/icons/dev_manual_icon.png</normaloff>:/file/icons/dev_manual_icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Руководство разработчика</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="fileReferenceAct">
+   <property name="icon">
+    <iconset resource="sources.qrc">
+     <normaloff>:/file/icons/data_file_reference_icon.png</normaloff>:/file/icons/data_file_reference_icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Описание дескрипторов</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
   <zorder>dock_file</zorder>
@@ -1065,7 +1128,13 @@
   <customwidget>
    <class>ColorWidget</class>
    <extends>QWidget</extends>
-   <header>colorwidget.h</header>
+   <header>widgets/colorwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ImageSizeViewer</class>
+   <extends>QWidget</extends>
+   <header>widgets/imagesizeviewer.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

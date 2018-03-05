@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/">
+    <qresource prefix="/file">
         <file>favicon.ico</file>
         <file>iconsource.rc</file>
         <file>icons/about_ic.png</file>
@@ -27,9 +27,14 @@
         <file>icons/settings_ic.png</file>
         <file>icons/view_groups_objects_ic.png</file>
         <file>icons/open_dataFile_ic.png</file>
-        <file>icons/zoomInIcon.png</file>
-        <file>icons/zoomOutIcon.png</file>
         <file>icons/filter_icon.png</file>
-        <file>icons/quit_app_icon.png</file>
+        <file>icons/data_file_reference_icon.png</file>
+        <file>icons/dev_manual_icon.png</file>
+        <file>icons/quit_app_ic.png</file>
+        <file>icons/user_manual_ic.png</file>
+        <file>icons/zoom_in_ic.png</file>
+        <file>icons/zoom_out_ic.png</file>
     </qresource>
+    <qresource prefix="/view"/>
+    <qresource prefix="/about"/>
 </RCC>

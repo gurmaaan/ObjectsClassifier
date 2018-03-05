@@ -26,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(model, &DataModel::objCountChanged, ui->dataObjectsCountSpinBox, &QSpinBox::setValue);
     connect(model, &DataModel::incrementProgress, ui->dataFileProgressBar, &QProgressBar::setValue);
 
+    connect(ui->objectColorWidget, &ColorWidget::viewStateChanged, model, &DataModel::setObjectsVisible);
     connect(ui->objectColorWidget, &ColorWidget::colorChenged, this, &MainWindow::updateObjColor);
     connect(ui->contourColorWidget, &ColorWidget::colorChenged, this, &MainWindow::updateContourColor);
 
@@ -56,9 +57,9 @@ void MainWindow::updateViewer(const QPixmap &pixmap, double scaleCoeff, Qt::Aspe
     QGraphicsPixmapItem *pItem = scene->addPixmap(newPixMap);
     pItem->setPos(0, 0);
 
-    ui->graphicsView->fitInView(QRectF(scene->width() / 2, scene->height() / 2, w, h), mode);
-    ui->graphicsView->setScene(scene);
-    ui->graphicsView->show();
+    viewer->fitInView(QRectF(scene->width() / 2, scene->height() / 2, w, h), mode);
+    viewer->setScene(scene);
+    viewer->show();
 }
 
 void MainWindow::resizeEvent(QResizeEvent* event)
@@ -126,7 +127,7 @@ void MainWindow::on_openImgAct_triggered(bool checked)
             updateViewer(QPixmap(fileName), ui->zoomSpinbox->value(), checkedRatio());
             model->setImage(fileName);
             ui->dock_scale->setEnabled(true);
-
+            ui->imageSizeWidget->setImage(QImage(fileName));
             ui->tabWidget->setCurrentIndex(0);
         }
      }
@@ -215,6 +216,7 @@ void MainWindow::updateContourColor(QColor clr)
 
 void MainWindow::on_zoomSpinbox_valueChanged(double newScaleCoeff)
 {
+    //BUG: когда меняется содержимое spin box'a , слайдер не двигается
     int compare = static_cast<int>(newScaleCoeff - scaleCoeff());
     if (compare != 0)
         setScaleCoeff(newScaleCoeff);
@@ -333,8 +335,8 @@ void MainWindow::on_openAttrAct_triggered(bool checked)
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly)) {
         qDebug() << file.errorString();
-    }else
-    {
+    }
+    else {
         QTextStream in(&file);
         // Считываем данные до конца файла
         while (!in.atEnd())
@@ -355,4 +357,22 @@ void MainWindow::on_openAttrAct_triggered(bool checked)
 void MainWindow::on_contourWidthSlider_sliderMoved(int position)
 {
     //TODO: Связать со слотом объекта
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    QGraphicsScene *test = new QGraphicsScene();
+    scene->clear();
+    //viewer->sce
+    QVector<QPointF> vectorTest;
+    foreach (auto objectOnImage, model->getObjectsOnImage())
+    {
+        for(auto point : objectOnImage.getInternalPoits())
+            vectorTest.append(QPointF(point));
+
+        QPolygonF pointsPoly(vectorTest);
+        test->addPolygon(QPolygonF(vectorTest), QPen(QColor(Qt::green)), QBrush(Qt::red));
+    }
+    viewer->setScene(test);
+    viewer->show();
 }

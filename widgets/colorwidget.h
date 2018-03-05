@@ -41,6 +41,7 @@ public:
     void setChecked(bool checked);
 
 signals:
+    void viewStateChanged(bool state);
     void colorChenged(QColor color);
 
 private slots:

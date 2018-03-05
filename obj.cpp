@@ -15,7 +15,7 @@ Obj::Obj(const Obj &other)
     _id = other.id();
     _contourPoints = other.contourPointns();
     _contourPointsCount = other.contourPointsCount();
-    _internalPoints = other.internalPoits();
+    _internalPoints = other.getInternalPoits();
     _intPointsCount = other.getInternalPointsCount();
 }
 
@@ -24,7 +24,7 @@ Obj &Obj::operator = (const Obj &ob)
     if (this->_intPointsCount == ob.getInternalPointsCount() && this->_contourPointsCount == ob.getInternalPointsCount())
     {
         setId(ob.id());
-        setInternalPoits(ob.internalPoits());
+        setInternalPoits(ob.getInternalPoits());
         setContourPointns(ob.contourPointns());
         return *this;
     }
@@ -41,7 +41,7 @@ uint Obj::qHash(const Obj &ob)
             ^ qHash(ob.getInternalPointsCount()));
 }
 
-QVector<QPoint> Obj::internalPoits() const
+QVector<QPoint> Obj::getInternalPoits() const
 {
     return _internalPoints;
 }
@@ -113,21 +113,32 @@ void Obj::setContourPointsCount(int contourPointsCount)
     _contourPointsCount = contourPointsCount;
 }
 
-QColor Obj::getContourColor() const
+void Obj::setInternalColor(QColor &internalColor)
+{
+    if (_internalPolyItem->polygon().count() !=0)
+    {
+        QBrush brush(internalColor);
+        setInternalBrush(brush);
+        _internalColor = internalColor;
+    }
+}
+
+QColor Obj::getContourColor()
 {
     return _contourColor;
 }
 
-void Obj::setContourColor(const QColor &contourColor)
+void Obj::setContourColor(QColor &contourColor)
 {
-    //приравниваем локал к глобалу
-    //у добавленной в класс QPen делается сет колор
-    //Полигон репаинт
-    //Эмит Апдейт Сцена
-    _contourColor = contourColor;
+    if (_contourPolyItem->polygon().count() != 0)
+    {
+        QPen pen(contourColor);
+        _contourColor = contourColor;
+        setContourPen(pen);
+    }
 }
 
-int Obj::getContourWidth() const
+int Obj::getContourWidth()
 {
     return _contourWidth;
 }
@@ -136,51 +147,70 @@ void Obj::setContourWidth(int contourWidth)
 {
     if (contourWidth <= 10 && contourWidth >= 1)
     {
-
+        _contourPen.setWidth(contourWidth);
         _contourWidth = contourWidth;
+
     }
 }
 
-QBrush Obj::getInternalBrush() const
+QBrush Obj::getInternalBrush()
 {
     return _internalBrush;
 }
 
-void Obj::setInternalBrush(const QBrush &internalBrush)
+void Obj::setInternalBrush(QBrush &internalBrush)
 {
     _internalBrush = internalBrush;
 }
 
-QPolygonF Obj::getInternalPolygonF() const
+QVector<QPointF> Obj::convertToF(QVector<QPoint> &vectorI)
 {
+    QVector<QPointF> floatVector;
 
-    return _internalPolygonF;
+    foreach (auto point, vectorI) {
+        floatVector.append(QPointF(point));
+    }
+    return floatVector;
 }
 
-void Obj::setInternalPolygonF(const QPolygonF &internalPolygonF)
+QGraphicsPolygonItem *Obj::initInternalPolyItem(QVector<QPoint> &vectorI)
 {
-    _internalPolygonF = internalPolygonF;
+    QVector<QPointF> vectorF;
+    vectorF = convertToF(vectorI);
+    QPolygonF internalPolygonF(vectorF);
+    _internalPolyItem = new QGraphicsPolygonItem(internalPolygonF);
+    return _internalPolyItem;
 }
 
-QPen Obj::getContourPen() const
+QGraphicsPolygonItem *Obj::initContourPolyItem(QVector<QPoint> &vectorI)
+{
+    QVector<QPointF> vectorF;
+    vectorF = convertToF(vectorI);
+    QPolygonF contourPolygonF(vectorF);
+    _contourPolyItem = new QGraphicsPolygonItem(contourPolygonF);
+    return _internalPolyItem;
+}
+
+QPen Obj::getContourPen()
 {
     return _contourPen;
 }
 
-void Obj::setContourPen(const QPen &contourPen)
+void Obj::setContourPen(QPen &contourPen)
 {
     _contourPen = contourPen;
 }
 
-QPolygonF Obj::getContourPolygonF() const
+QGraphicsPolygonItem *Obj::getContourPolyItem()
 {
-    return _contourPolygonF;
+    return _contourPolyItem;
 }
 
-void Obj::setContourPolygonF(const QPolygonF &contourPolygonF)
+QGraphicsPolygonItem *Obj::getInternalPolyItem()
 {
-    _contourPolygonF = contourPolygonF;
+    return _internalPolyItem;
 }
+
 
 QDebug operator <<(QDebug dbg, const Obj &ob)
 {
@@ -190,8 +220,8 @@ QDebug operator <<(QDebug dbg, const Obj &ob)
     
     for (int i = 0; i < ob.getInternalPointsCount(); i++)
         dbg << "\t\t" << i <<":"
-            <<" (" << ob.internalPoits().at(i).x() << " ; "
-            << ob.internalPoits().at(i).y() << ");" << endl;
+            <<" (" << ob.getInternalPoits().at(i).x() << " ; "
+            << ob.getInternalPoits().at(i).y() << ");" << endl;
 
 
     dbg << "\tContour points count: " << ob.contourPointsCount() << endl;
@@ -212,4 +242,5 @@ bool operator ==(const Obj &ob1, const Obj &ob2)
 
     return (idEqual && contourPointsCountEqual && internalPointsCountEqual);
 }
+
 
