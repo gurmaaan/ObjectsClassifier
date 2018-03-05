@@ -1,6 +1,6 @@
 #include "obj.h"
-
 Obj::Obj(const int id)
+
     : _id(id)
 {
 }
@@ -115,12 +115,8 @@ void Obj::setContourPointsCount(int contourPointsCount)
 
 void Obj::setInternalColor(QColor &internalColor)
 {
-    if (_internalPolyItem->polygon().count() !=0)
-    {
-        QBrush brush(internalColor);
-        setInternalBrush(brush);
-        _internalColor = internalColor;
-    }
+    //TODO внутренние: проброска обновления цвета от виджета
+    _internalColor = internalColor;
 }
 
 QColor Obj::getContourColor()
@@ -130,12 +126,8 @@ QColor Obj::getContourColor()
 
 void Obj::setContourColor(QColor &contourColor)
 {
-    if (_contourPolyItem->polygon().count() != 0)
-    {
-        QPen pen(contourColor);
-        _contourColor = contourColor;
-        setContourPen(pen);
-    }
+    //TODO контурные: проброска обновления цвета от виджета
+    _contourColor = contourColor;
 }
 
 int Obj::getContourWidth()
@@ -145,72 +137,141 @@ int Obj::getContourWidth()
 
 void Obj::setContourWidth(int contourWidth)
 {
-    if (contourWidth <= 10 && contourWidth >= 1)
-    {
-        _contourPen.setWidth(contourWidth);
-        _contourWidth = contourWidth;
-
-    }
+    _contourWidth = contourWidth;
+    qDebug() << contourWidth;
 }
 
-QBrush Obj::getInternalBrush()
+QPixmap Obj::getInternalPixmap()
 {
-    return _internalBrush;
+    setMinOX( getMinX(_contourPoints) );
+    setMinOY( getMinY(_contourPoints) );
+    setMaxOX( getMaxX(_contourPoints) );
+    setMaxOY( getMaxY(_contourPoints) );
+
+    QSize tempSize( getAreaWidth(_internalPoints), getAreaHeight(_internalPoints) );
+
+    QPixmap cntPixMap(tempSize);
+
+    cntPixMap.fill(qRgba(0, 255, 0, 180));
+    return _internalPixmap;
 }
 
-void Obj::setInternalBrush(QBrush &internalBrush)
+void Obj::setInternalPixmap(QPixmap &internalPixmap)
 {
-    _internalBrush = internalBrush;
+    _internalPixmap = internalPixmap;
 }
 
-QVector<QPointF> Obj::convertToF(QVector<QPoint> &vectorI)
+QPixmap Obj::getObjectIcon(QVector<QPoint> points)
 {
-    QVector<QPointF> floatVector;
+    QPixmap copy;
+    copy = getInternalPixmap().copy(_minOX, _maxOY, getAreaWidth(points), getAreaHeight(points));
 
-    foreach (auto point, vectorI) {
-        floatVector.append(QPointF(point));
-    }
-    return floatVector;
+    return copy;
 }
 
-QGraphicsPolygonItem *Obj::initInternalPolyItem(QVector<QPoint> &vectorI)
+int Obj::getAreaWidth(QVector<QPoint> points)
 {
-    QVector<QPointF> vectorF;
-    vectorF = convertToF(vectorI);
-    QPolygonF internalPolygonF(vectorF);
-    _internalPolyItem = new QGraphicsPolygonItem(internalPolygonF);
-    return _internalPolyItem;
+    //minX = самая левая координата области
+    //maxX = самая правая
+    //их разница даст ширину нового изображения
+
+    int minX = getMinX(points);
+    int maxX = getMaxX(points);
+    int w = maxX - minX;
+    qDebug() << "Ширина: " << w;
+    return w;
 }
 
-QGraphicsPolygonItem *Obj::initContourPolyItem(QVector<QPoint> &vectorI)
+int Obj::getAreaHeight(QVector<QPoint> points)
 {
-    QVector<QPointF> vectorF;
-    vectorF = convertToF(vectorI);
-    QPolygonF contourPolygonF(vectorF);
-    _contourPolyItem = new QGraphicsPolygonItem(contourPolygonF);
-    return _internalPolyItem;
+    //minY = нижня координата области
+    //maxY = самая верхняя
+    //их разница даст высотуц создаваемого изображения
+
+    int minY = getMinY(points);
+    int maxY = getMaxY(points);
+    int h = maxY - minY;
+    qDebug() << "Высота: " <<h;
+    return h;
 }
 
-QPen Obj::getContourPen()
+int Obj::getMinX(QVector<QPoint> points)
 {
-    return _contourPen;
+    return std::min_element(points.begin()->y(), points.end()->y());
 }
 
-void Obj::setContourPen(QPen &contourPen)
+int Obj::getMaxX(QVector<QPoint> points)
 {
-    _contourPen = contourPen;
+    return std::max_element(points.begin()->x(), points.end()->x());
 }
 
-QGraphicsPolygonItem *Obj::getContourPolyItem()
+int Obj::getMinY(QVector<QPoint> points)
 {
-    return _contourPolyItem;
+    return std::min_element(points.begin()->y(), points.end()->y());
 }
 
-QGraphicsPolygonItem *Obj::getInternalPolyItem()
+int Obj::getMaxY(QVector<QPoint> points)
 {
-    return _internalPolyItem;
+    return std::max_element(points.begin()->y(), points.end()->y());
 }
 
+QPixmap Obj::getContourPixmap()
+{
+    setMinСX( getMinX(_contourPoints) );
+    setMinСY( getMinY(_contourPoints) );
+    setMaxСX( getMaxX(_contourPoints) );
+    setMaxСY( getMaxY(_contourPoints) );
+
+    QSize tempSize( getAreaWidth(_contourPoints), getAreaHeight(_contourPoints) );
+    QPixmap cntPixMap(tempSize);
+    cntPixMap.fill(qRgba(255 ,0, 0, 170));
+    return _contourPixmap;
+}
+
+void Obj::setContourPixmap(QPixmap &contourPixmap)
+{
+    _contourPixmap = contourPixmap;
+}
+
+void Obj::setMinСX(int minСX)
+{
+    _minСX = minСX;
+}
+
+void Obj::setMinСY(int minСY)
+{
+    _minСY = minСY;
+}
+
+void Obj::setMaxСX(int maxСX)
+{
+    _maxСX = maxСX;
+}
+
+void Obj::setMaxСY(int maxСY)
+{
+    _maxСY = maxСY;
+}
+
+void Obj::setMinOX(int minOX)
+{
+    _minOX = minOX;
+}
+
+void Obj::setMinOY(int minOY)
+{
+    _minOY = minOY;
+}
+
+void Obj::setMaxOX(int maxOX)
+{
+    _maxOX = maxOX;
+}
+
+void Obj::setMaxOY(int maxOY)
+{
+    _maxOY = maxOY;
+}
 
 QDebug operator <<(QDebug dbg, const Obj &ob)
 {

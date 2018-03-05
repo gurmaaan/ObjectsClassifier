@@ -57,7 +57,6 @@ signals:
     void pathDataLoaded(QString newPath);
     void objCountChanged(int newCount);
     void incrementProgress(int newValue);
-    //void polygonUpdated(ЙЗщ)
 
 private:
     QImage _image;
@@ -80,7 +79,6 @@ private:
     QStandardItemModel *initModel();
 
     void addObjectRootItem(QStandardItemModel *model, const Obj& ob);
-    QIcon
 
     QStandardItem *addHeadingItem(QStandardItem *parent, const QStringList& headerList);
     QStandardItem *addIntegerItem(QStandardItem *parent, const QString& name, const int& value);

@@ -2,18 +2,12 @@
 #define OBJ_H
 
 #include <QObject>
+#include <QPixmap>
 #include <QPoint>
 #include <QVector>
 #include <QDebug>
 #include <QDataStream>
-#include <QPolygon>
-#include <QGraphicsPolygonItem>
-#include <QPen>
-#include <QBrush>
-#include <QIcon>
-#include <QGraphicsPixmapItem>
 
-//TODO:1 - переименовать понятие атрибут в объект
 //TODO:2 - в объекте прописать методы возвращающие полигоны, кисти, цвета и тд
 //TODO:3 - в моделе прописать создание полигон айтемов, формирование вектора полигон айтемов и их апдейт по сигналам главного окна
 //TODO:4 - в главном окне прописать метод обновления сцены = вьюхи по сигналам обновления из модели
@@ -23,38 +17,6 @@
 //TODO:
 //TODO:8 фильтрация
 //TODO:9 группировка
-enum class Attribute
-{
-    //Яркостные признаки 0-2. Средняя яркость по компонентам
-    //Вычисляется как суммарная яркость / кол-во пикселей
-    BrRAv,
-    BrGAv,
-    BrBAv,
-
-    //Яркостные признаки 3-5. СКО яркости по компонентам.
-    //sqrt { sum[ (сред ярк - ярк в i)^2 / N ] }
-    BrRsko,
-    BrGsko,
-    BrBsko,
-
-    //Текстурные признаки 6-8. МПС  по компонентам - энергия.
-    //По факту - среднее значение квадрата яркости компонента
-    TextRmps,
-    TextGmps,
-    TextBmps,
-
-    //Текстурные признаки 9-11. Длина серии по компонентам - энтропия.
-    //По факту - среднее значение величины R * ln (R)
-    TextRser,
-    TextGser,
-    TextBser,
-
-    //Геометрические признаки.
-    // S = площадь, P = периметр, K = P^2 / S
-    GeomForm,
-    GeomSquare,
-    GeomPerim
-};
 
 class Obj : public QObject
 {
@@ -68,6 +30,8 @@ public:
     //Диструктор по умолчанию
     ~Obj();
 
+    int _minOX = 0, _minOY = 0, _maxOX = 0, _maxOY = 0;
+    int _minСX = 0, _minСY = 0, _maxСX = 0, _maxСY = 0;
     //Перегрузка оператора равенства
     Obj& operator = (const Obj &ob);
 
@@ -89,34 +53,49 @@ public:
     int id() const;
     void setId(int id);
 
+    //-----количество точек------
     int getInternalPointsCount() const;
     void setIntPointsCount(int getInternalPointsCount);
 
     int contourPointsCount() const;
     void setContourPointsCount(int contourPointsCount);
 
-    //---------------------------------------------------
+    //----Цвет подсветки
     QColor getInternalColor();
     void setInternalColor(QColor &internalColor);
 
     QColor getContourColor();
     void setContourColor(QColor &contourColor);
 
+    //----Ширина контура-------
     int getContourWidth();
     void setContourWidth(int contourWidth);
 
-    QBrush getInternalBrush();
-    void setInternalBrush(QBrush &internalBrush);
+    //---Куски изображения содержащие объект
+    QPixmap getInternalPixmap() ;
+    void setInternalPixmap(QPixmap &internalPixmap);
 
-    QPen getContourPen();
-    void setContourPen(QPen &contourPen);
+    QPixmap getObjectIcon(QVector<QPoint> points);
 
-//    QPolygonF getContourPolygonF();
-//    QPolygonF getInternalPolygonF();
+    int getAreaWidth(QVector<QPoint> points);
+    int getAreaHeight(QVector<QPoint> points);
+    int getMinX(QVector<QPoint> points);
+    int getMaxX(QVector<QPoint> points);
+    int getMinY(QVector<QPoint> points);
+    int getMaxY(QVector<QPoint> points);
 
-    //когда уже заполнено, просто гетер
-    QGraphicsPolygonItem *getContourPolyItem();
-    QGraphicsPolygonItem *getInternalPolyItem();
+    QPixmap getContourPixmap();
+    void setContourPixmap(QPixmap &contourPixmap);
+
+    void setMinСX(int minСX);
+    void setMinСY(int minСY);
+    void setMaxСX(int maxСX);
+    void setMaxСY(int maxСY);
+
+    void setMinOX(int minOX);
+    void setMinOY(int minOY);
+    void setMaxOX(int maxOX);
+    void setMaxOY(int maxOY);
 
 private:
     int _id;
@@ -130,16 +109,12 @@ private:
     QColor _internalColor;
     QPixmap _internalPixmap;
 
+
     //Отображение контурных точек
     QColor _contourColor;
     int _contourWidth;
-    QGraphicsPolygonItem *_contourPolyItem;
+    QPixmap _contourPixmap;
 
-    QVector<QPointF> convertToF(QVector<QPoint> &vectorI);
-
-    //Создаем сами объекты, сетапим точки, сетапим цвет и кисть
-    QGraphicsPolygonItem *initInternalPolyItem(QVector<QPoint> &vectorI);
-    QGraphicsPolygonItem *initContourPolyItem(QVector<QPoint> &vectorI);
 };
 
 Q_DECLARE_METATYPE(Obj);

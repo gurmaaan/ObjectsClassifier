@@ -319,6 +319,7 @@ void MainWindow::on_zoomRatioSlider_valueChanged(int value)
 }
 
 //Файл атрибутов - парсинг .csv файла
+//TODo : пренести в файл модели
 void MainWindow::on_openAttrAct_triggered(bool checked)
 {
     updateAccessState(ui->openAttrAct, ui->openAttrBut, !checked, checked);
@@ -356,23 +357,13 @@ void MainWindow::on_openAttrAct_triggered(bool checked)
 
 void MainWindow::on_contourWidthSlider_sliderMoved(int position)
 {
-    //TODO: Связать со слотом объекта
+    //TODO: Связать со слотом объекта на обновление ширины контура
 }
 
 void MainWindow::on_pushButton_clicked()
 {
-    QGraphicsScene *test = new QGraphicsScene();
-    scene->clear();
-    //viewer->sce
-    QVector<QPointF> vectorTest;
-    foreach (auto objectOnImage, model->getObjectsOnImage())
+    foreach (auto objOnImg, model->getObjectsOnImage())
     {
-        for(auto point : objectOnImage.getInternalPoits())
-            vectorTest.append(QPointF(point));
-
-        QPolygonF pointsPoly(vectorTest);
-        test->addPolygon(QPolygonF(vectorTest), QPen(QColor(Qt::green)), QBrush(Qt::red));
+        scene->addPixmap(objOnImg.getContourPixmap());
     }
-    viewer->setScene(test);
-    viewer->show();
 }

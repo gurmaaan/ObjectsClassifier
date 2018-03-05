@@ -32,7 +32,8 @@ SOURCES += \
     obj.cpp \
     datamodel.cpp \
     widgets/colorwidget.cpp \
-    widgets/imagesizeviewer.cpp
+    widgets/imagesizeviewer.cpp \
+    attribute.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -41,7 +42,8 @@ HEADERS += \
     datamodel.h \
     widgets/colorwidget.h \
     const.h \
-    widgets/imagesizeviewer.h
+    widgets/imagesizeviewer.h \
+    attribute.h
 
 RESOURCES += \
         sources.qrc
