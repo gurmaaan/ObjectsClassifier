@@ -1,11 +1,10 @@
 #include "obj.h"
+
 Obj::Obj(const int id)
 
-    : _id(id)
-{
-}
-
-Obj::~Obj()
+    : _id(id),
+      _internalColor(Qt::green), _contourColor(Qt::red),
+      _contourWidth(0)
 {
 
 }
@@ -13,19 +12,29 @@ Obj::~Obj()
 Obj::Obj(const Obj &other)
 {
     _id = other.id();
-    _contourPoints = other.contourPointns();
-    _contourPointsCount = other.contourPointsCount();
-    _internalPoints = other.getInternalPoits();
-    _intPointsCount = other.getInternalPointsCount();
+}
+
+Obj::~Obj()
+{
+
 }
 
 Obj &Obj::operator = (const Obj &ob)
 {
-    if (this->_intPointsCount == ob.getInternalPointsCount() && this->_contourPointsCount == ob.getInternalPointsCount())
+    if (this->_internalPoints.count() == ob.getInternalPoits().count()
+            && this->_contourPoints.count() == ob.getInternalPoits().count() )
     {
         setId(ob.id());
+
         setInternalPoits(ob.getInternalPoits());
-        setContourPointns(ob.contourPointns());
+        setContourPointns(ob.getContourPointns());
+
+        setInternalColor(ob.getInternalColor());
+        setContourColor(ob.getInternalColor());
+
+        setInternalPixmap(ob.getInternalPixmap());
+        setContourPixmap(ob.getContourPixmap());
+
         return *this;
     }
     else
@@ -36,9 +45,7 @@ Obj &Obj::operator = (const Obj &ob)
 
 uint Obj::qHash(const Obj &ob)
 {
-    return (qHash(ob.id())
-            ^ qHash(ob.contourPointsCount())
-            ^ qHash(ob.getInternalPointsCount()));
+    return qHash(ob.id());
 }
 
 QVector<QPoint> Obj::getInternalPoits() const
@@ -51,7 +58,7 @@ void Obj::setInternalPoits(const QVector<QPoint> &internalPoits)
     _internalPoints = internalPoits;
 }
 
-QVector<QPoint> Obj::contourPointns() const
+QVector<QPoint> Obj::getContourPointns() const
 {
     return _contourPoints;
 }
@@ -68,8 +75,7 @@ void Obj::pushInternalPoint(QPoint point)
 
 void Obj::pushInternalPoint(int x, int y)
 {
-    QPoint tempPoint(x, y);
-    _internalPoints.append(tempPoint);
+    _internalPoints.append(QPoint(x, y));
 }
 
 void Obj::pushContourPoint(QPoint point)
@@ -79,8 +85,19 @@ void Obj::pushContourPoint(QPoint point)
 
 void Obj::pushContourPoint(int x, int y)
 {
-    QPoint tempPoint(x, y);
-    _contourPoints.append(tempPoint);
+    _contourPoints.append(QPoint(x, y));
+}
+
+QRect Obj::getInternalRect() const
+{
+    QRect rect(getAreaRect(_internalPoints));
+    return rect;
+}
+
+QRect Obj::getContourRect() const
+{
+    QRect rect(getAreaRect(_contourPoints));
+    return rect;
 }
 
 int Obj::id() const
@@ -93,43 +110,6 @@ void Obj::setId(int id)
     _id = id;
 }
 
-int Obj::getInternalPointsCount() const
-{
-    return _intPointsCount;
-}
-
-void Obj::setIntPointsCount(int intPointsCount)
-{
-    _intPointsCount = intPointsCount;
-}
-
-int Obj::contourPointsCount() const
-{
-    return _contourPointsCount;
-}
-
-void Obj::setContourPointsCount(int contourPointsCount)
-{
-    _contourPointsCount = contourPointsCount;
-}
-
-void Obj::setInternalColor(QColor &internalColor)
-{
-    //TODO внутренние: проброска обновления цвета от виджета
-    _internalColor = internalColor;
-}
-
-QColor Obj::getContourColor()
-{
-    return _contourColor;
-}
-
-void Obj::setContourColor(QColor &contourColor)
-{
-    //TODO контурные: проброска обновления цвета от виджета
-    _contourColor = contourColor;
-}
-
 int Obj::getContourWidth()
 {
     return _contourWidth;
@@ -138,159 +118,113 @@ int Obj::getContourWidth()
 void Obj::setContourWidth(int contourWidth)
 {
     _contourWidth = contourWidth;
-    qDebug() << contourWidth;
 }
 
-QPixmap Obj::getInternalPixmap()
+QColor Obj::getContourColor() const
 {
-    setMinOX( getMinX(_contourPoints) );
-    setMinOY( getMinY(_contourPoints) );
-    setMaxOX( getMaxX(_contourPoints) );
-    setMaxOY( getMaxY(_contourPoints) );
-
-    QSize tempSize( getAreaWidth(_internalPoints), getAreaHeight(_internalPoints) );
-
-    QPixmap cntPixMap(tempSize);
-
-    cntPixMap.fill(qRgba(0, 255, 0, 180));
-    return _internalPixmap;
+    return _contourColor;
 }
 
-void Obj::setInternalPixmap(QPixmap &internalPixmap)
+void Obj::setContourColor(const QColor &contourColor)
+{
+    _contourColor = contourColor;
+}
+
+QColor Obj::getInternalColor() const
+{
+    return _internalColor;
+}
+
+void Obj::setInternalColor(const QColor &internalColor)
+{
+    _internalColor = internalColor;
+}
+
+QPixmap Obj::getInternalPixmap() const
+{
+    QRect intRect = getInternalRect();
+
+    QImage intImg(intRect.size(), QImage::Format_ARGB32);
+
+    for (int i = 0; i < intRect.width(); i++) {
+        for (int j = 0; j < intRect.height(); j++) {
+            intImg.setPixelColor(i, j, getInternalColor());
+        }
+    }
+
+    return QPixmap::fromImage(intImg);
+}
+
+void Obj::setInternalPixmap(const QPixmap &internalPixmap)
 {
     _internalPixmap = internalPixmap;
 }
 
-QPixmap Obj::getObjectIcon(QVector<QPoint> points)
+QPixmap Obj::getContourPixmap() const
 {
-    QPixmap copy;
-    copy = getInternalPixmap().copy(_minOX, _maxOY, getAreaWidth(points), getAreaHeight(points));
 
-    return copy;
-}
-
-int Obj::getAreaWidth(QVector<QPoint> points)
-{
-    //minX = самая левая координата области
-    //maxX = самая правая
-    //их разница даст ширину нового изображения
-
-    int minX = getMinX(points);
-    int maxX = getMaxX(points);
-    int w = maxX - minX;
-    qDebug() << "Ширина: " << w;
-    return w;
-}
-
-int Obj::getAreaHeight(QVector<QPoint> points)
-{
-    //minY = нижня координата области
-    //maxY = самая верхняя
-    //их разница даст высотуц создаваемого изображения
-
-    int minY = getMinY(points);
-    int maxY = getMaxY(points);
-    int h = maxY - minY;
-    qDebug() << "Высота: " <<h;
-    return h;
-}
-
-int Obj::getMinX(QVector<QPoint> points)
-{
-    return std::min_element(points.begin()->y(), points.end()->y());
-}
-
-int Obj::getMaxX(QVector<QPoint> points)
-{
-    return std::max_element(points.begin()->x(), points.end()->x());
-}
-
-int Obj::getMinY(QVector<QPoint> points)
-{
-    return std::min_element(points.begin()->y(), points.end()->y());
-}
-
-int Obj::getMaxY(QVector<QPoint> points)
-{
-    return std::max_element(points.begin()->y(), points.end()->y());
-}
-
-QPixmap Obj::getContourPixmap()
-{
-    setMinСX( getMinX(_contourPoints) );
-    setMinСY( getMinY(_contourPoints) );
-    setMaxСX( getMaxX(_contourPoints) );
-    setMaxСY( getMaxY(_contourPoints) );
-
-    QSize tempSize( getAreaWidth(_contourPoints), getAreaHeight(_contourPoints) );
-    QPixmap cntPixMap(tempSize);
-    cntPixMap.fill(qRgba(255 ,0, 0, 170));
     return _contourPixmap;
 }
 
-void Obj::setContourPixmap(QPixmap &contourPixmap)
+void Obj::setContourPixmap(const QPixmap &contourPixmap)
 {
     _contourPixmap = contourPixmap;
 }
 
-void Obj::setMinСX(int minСX)
+QRect Obj::getAreaRect(QVector<QPoint> points) const
 {
-    _minСX = minСX;
-}
+    int minX = points.first().x();
+    int maxX = minX;
+    int minY = points.first().y();
+    int maxY = minY;
 
-void Obj::setMinСY(int minСY)
-{
-    _minСY = minСY;
-}
+    int w = 0, h = 0;
 
-void Obj::setMaxСX(int maxСX)
-{
-    _maxСX = maxСX;
-}
+    foreach(auto point, points)
+    {
+        int x = point.x();
+        int y = point.y();
 
-void Obj::setMaxСY(int maxСY)
-{
-    _maxСY = maxСY;
-}
+        if (x > maxX)
+            maxX = x;
 
-void Obj::setMinOX(int minOX)
-{
-    _minOX = minOX;
-}
+        if (y > maxY)
+            maxY = y;
 
-void Obj::setMinOY(int minOY)
-{
-    _minOY = minOY;
-}
+        if (x < minX)
+            minX = x;
 
-void Obj::setMaxOX(int maxOX)
-{
-    _maxOX = maxOX;
-}
+        if (y < minY)
+            minY = y;
+    }
 
-void Obj::setMaxOY(int maxOY)
-{
-    _maxOY = maxOY;
+    w = maxX - minX + 1;
+    h = maxY - minY + 1;
+
+    QRect rect(minX, minY, w, h);
+
+    return rect;
 }
 
 QDebug operator <<(QDebug dbg, const Obj &ob)
 {
     dbg << "Object id: " << ob.id() << endl;
+    int ic = ob.getInternalPoits().count();
+    int cc = ob.getContourPointns().count();
+    dbg << "\tInternal points count: " << ic << endl;
     
-    dbg << "\tInternal points count: " << ob.getInternalPointsCount() << endl;
-    
-    for (int i = 0; i < ob.getInternalPointsCount(); i++)
+    for (int i = 0; i < ic; i++)
         dbg << "\t\t" << i <<":"
             <<" (" << ob.getInternalPoits().at(i).x() << " ; "
             << ob.getInternalPoits().at(i).y() << ");" << endl;
 
 
-    dbg << "\tContour points count: " << ob.contourPointsCount() << endl;
+    dbg << "\tContour points count: " << cc << endl;
 
-    for (int j = 0; j < ob.contourPointsCount(); j++)
+    for (int j = 0; j < cc; j++)
         dbg << "\t\t" << j <<":"
-            <<" (" << ob.contourPointns().at(j).x() << " ; "
-            << ob.contourPointns().at(j).y() << ");" <<endl;
+            <<" (" << ob.getContourPointns().at(j).x() << " ; "
+            << ob.getContourPointns().at(j).y() << ");" <<endl;
 
     return dbg;
 }
@@ -298,10 +232,14 @@ QDebug operator <<(QDebug dbg, const Obj &ob)
 bool operator ==(const Obj &ob1, const Obj &ob2)
 {
     bool idEqual = ob1.id() == ob2.id() ? true : false;
-    bool contourPointsCountEqual = ob1.contourPointsCount() == ob2.contourPointsCount() ? true : false;
-    bool internalPointsCountEqual = ob1.getInternalPointsCount() == ob2.getInternalPointsCount() ? true : false;
+
+    int ic1 = ob1.getInternalPoits().count();
+    int cc1 = ob1.getContourPointns().count();
+    int ic2 = ob2.getInternalPoits().count();
+    int cc2 = ob2.getContourPointns().count();
+
+    bool contourPointsCountEqual = cc1 == cc2 ? true : false;
+    bool internalPointsCountEqual = ic1 == ic2 ? true : false;
 
     return (idEqual && contourPointsCountEqual && internalPointsCountEqual);
 }
-
-

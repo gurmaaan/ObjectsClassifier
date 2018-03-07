@@ -1,7 +1,7 @@
-#include "datamodel.h"
+ #include "datamodel.h"
 
 #ifndef ROOT_ITEM_SIZE
-#define ROOT_ITEM_SIZE QSize(200,30)
+#define ROOT_ITEM_SIZE QSize(200,58)
 #endif
 
 #ifndef META_ITEM_SIZE
@@ -24,10 +24,10 @@ QStandardItemModel *DataModel::getStandardItemtModel() const
 
 QStandardItemModel *DataModel::initModel()
 {
-    QStandardItemModel *model = new QStandardItemModel(0, 2);
+    QStandardItemModel *model = new QStandardItemModel(0, 4);
 
     QStringList modelHeaders;
-    modelHeaders << "Название атрибута" << "Значение";
+    modelHeaders << "Объект" << "id" << "Ширина" << "Высота";
     model->setHorizontalHeaderLabels(modelHeaders);
     _model = model;
 
@@ -39,13 +39,40 @@ void DataModel::addObjectRootItem(QStandardItemModel *model, const Obj &ob)
     QStringList objStrList;
     objStrList << "id: " << QString::number(ob.id());
 
-    QStandardItem *objectRoot = new QStandardItem(0, 2);
+    QStandardItem *objectRoot = new QStandardItem(0, 4);
 
-//    item->setText( "Объект " + QString::number( ob.id() ) );
-
-    //Добавление в корень строку id : номер
+    QRect iconRect = ob.getInternalRect();
+    int w = iconRect.width();
+    int h = iconRect.height();
+    objStrList << QString::number(w) << QString::number(h);
     objectRoot = addMainHeadingItem(model, objStrList);
 
+    QImage icon(w, h, QImage::Format_ARGB32);
+    icon.fill(Qt::transparent);
+
+    for (int i = 0; i < w; i++) {
+        for (int j = 0; j < h; j++) {
+            int deltaX = iconRect.left() + i;
+            int deltaY = iconRect.top() + j;
+            QColor color(_image.pixelColor(deltaX, deltaY));
+            icon.setPixelColor(iconRect.right() - deltaX, j, color);
+        }
+    }
+
+    QPixmap iconPixmap(QPixmap::fromImage(icon));
+
+    if( (w < 50)&&( h < 50) )
+    {
+        QPixmap result(50, 50);
+        result.fill(Qt::transparent);
+        QPainter painter(&result);
+        painter.drawPixmap(w, h, iconPixmap);
+
+        objectRoot->setIcon(QIcon(result));
+    } else
+    {
+        objectRoot->setIcon(QIcon(iconPixmap.scaled(50, 50, Qt::KeepAspectRatio)));
+    }
     addMetaObjectItem(objectRoot, ob);
     //model->appendRow();
 }
@@ -93,20 +120,18 @@ QStandardItem *DataModel::addMainHeadingItem(QStandardItemModel *parentModel, co
 void DataModel::addMetaObjectItem(QStandardItem *parent, const Obj &ob)
 {
     QStandardItem *intPointsCountItem = new QStandardItem();
-    intPointsCountItem = addIntegerItem(parent, "Внутренних точек: ", ob.getInternalPointsCount());
+    intPointsCountItem = addIntegerItem(parent, "Внутренних точек: ", ob.getInternalPoits().count());
     intPointsCountItem->setSizeHint(META_ITEM_SIZE);
     addPointsObjectItem(intPointsCountItem, ob.getInternalPoits());
 
     QStandardItem *contourPointsItem = new QStandardItem();
-    contourPointsItem = addIntegerItem(parent, "Контурных точек: ", ob.contourPointsCount() );
+    contourPointsItem = addIntegerItem(parent, "Контурных точек: ", ob.getContourPointns().count());
     contourPointsItem->setSizeHint(META_ITEM_SIZE);
-    addPointsObjectItem(contourPointsItem, ob.contourPointns());
+    addPointsObjectItem(contourPointsItem, ob.getContourPointns());
 }
 
 void DataModel::addPointsObjectItem(QStandardItem *parentMetaItem, const QVector<QPoint> &points)
 {
-    //TODO: сделать отображение в модели как отдельные числа а не строка
-
     QList<QStandardItem*> pointsList;
     int i = 1; //введено т. к. операция взятия индекса очень долгая
     for(auto point : points)
@@ -140,6 +165,7 @@ QString DataModel::dataFilePath() const
 
 void DataModel::resizeHeaderItem(int newWidth)
 {
+    qDebug() << "Skip warning" << newWidth;
     //TODO: Выравнивание ширины строк по ширине виджета
     //this->getStandardItemtModel()->ro
 }
@@ -164,6 +190,25 @@ void DataModel::setDataFilePath(const QString &dataFilePath)
         QMessageBox::critical(0, "Ошибка чтения файла", "Невозможно прочитать файл данных, строка содержащая путь некорректна");
     }
 }
+
+void DataModel::setAttrsFilePath(const QString &attrsFilePath)
+{
+    if(!attrsFilePath.isEmpty())
+    {
+        _attrsFilePath = attrsFilePath;
+        emit pathAttrLoaded(attrsFilePath);
+    }
+    else
+    {
+        QMessageBox::critical(0, "Ошибка чтения файла", "Невозможно прочитать файл аттрибутов, строка содержащая путь некорректна");
+    }
+}
+
+QString DataModel::getAttrsFilePath() const
+{
+    return _attrsFilePath;
+}
+
 
 QVector<Obj> DataModel::getObjectsOnImage() const
 {
@@ -207,17 +252,14 @@ void DataModel::loadObjectsData(const QString &dataFilePath)
         Obj ob(pointsFullList.at(0).toInt());
         int indOfC = pointsFullList.indexOf("C");
 
-        ob.setIntPointsCount((indOfC - 1) / 2);
         for (int i = 1; i < indOfC; i+=2)
             ob.pushInternalPoint(pointsFullList.at(i).toInt(), pointsFullList.at(i+1).toInt());
 
-        ob.setContourPointsCount( (pointsFullList.count() - indOfC) / 2);
         for (int j = indOfC + 1; j < pointsFullList.count(); j+=2)
             ob.pushContourPoint(pointsFullList.at(j).toInt(), pointsFullList.at(j+1).toInt());
 
         double progress = static_cast<double>(objectsStringList.indexOf(objFullString)) *
                 static_cast<double>(100) / static_cast<double>(objCount()) ;
-        //qDebug() << progress;
         emit incrementProgress(static_cast<int>(round(progress)));
         pushObject(ob);
     }

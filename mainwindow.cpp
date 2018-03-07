@@ -72,6 +72,7 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 void MainWindow::on_openImgBut_toggled(bool checked)
 {
     ui->openImgAct->triggered(checked);
+    ui->openDataAct->triggered(checked);
 }
 
 void MainWindow::on_openDataBut_toggled(bool checked)
@@ -90,12 +91,12 @@ void MainWindow::on_closeBut_clicked()
 }
 
 //Действие закрытия
-void MainWindow::on_closeAct_triggered(bool checked)
+void MainWindow::on_closeAct_triggered()
 {
-    updateAccessState(ui->closeAct, ui->closeBut, !checked);
-    updateAccessState(ui->openImgAct, ui->openImgBut, checked);
-    updateAccessState(ui->openDataAct, ui->openDataBut, !checked);
-    updateAccessState(ui->openAttrAct, ui->openAttrBut, !checked);
+    updateAccessState(ui->closeAct, ui->closeBut, false);
+    updateAccessState(ui->openImgAct, ui->openImgBut, true);
+    updateAccessState(ui->openDataAct, ui->openDataBut, false);
+    updateAccessState(ui->openAttrAct, ui->openAttrBut, false);
 
     ui->tabWidget->setCurrentIndex(0);
 
@@ -105,7 +106,7 @@ void MainWindow::on_closeAct_triggered(bool checked)
 }
 
 //Открытие самого изображения
-void MainWindow::on_openImgAct_triggered(bool checked)
+void MainWindow::on_openImgAct_triggered( )
 {
     updateAccessState(ui->openImgAct, ui->openImgBut, false, true);
     updateAccessState(ui->openDataAct, ui->openDataBut, true);
@@ -134,7 +135,7 @@ void MainWindow::on_openImgAct_triggered(bool checked)
 
 }
 //Действие открытия файла с точками
-void MainWindow::on_openDataAct_triggered(bool checked)
+void MainWindow::on_openDataAct_triggered( )
 {
     //TODO: добавить иконки в качестве части изображения
     updateAccessState(ui->openDataAct, ui->openDataBut, false, true);
@@ -162,8 +163,14 @@ void MainWindow::on_openDataAct_triggered(bool checked)
             ui->tree_data->setModel( model->getStandardItemtModel() );
             ui->tree_data->resizeColumnToContents(0);
             ui->tree_data->resizeColumnToContents(1);
-
             ui->dataFileProgressBar->setValue(model->objCount());
+
+            foreach(auto obj, model->getObjectsOnImage())
+            {
+                //FIXME: Assert QLista
+                scene->addPixmap(obj.getInternalPixmap());
+                viewer->show();
+            }
         }
     }
 }
@@ -206,12 +213,12 @@ void MainWindow::setScaleCoeff(double newScaleCoeff)
 //
 void MainWindow::updateObjColor(QColor clr)
 {
-
+    qDebug() << "I would like to fix warnings with" << clr.red();
 }
 
 void MainWindow::updateContourColor(QColor clr)
 {
-    //qDebug() << "Updated contour Color: " << clr << ui->contourColorWidget->getColor();
+    qDebug() << "Updated contour Color: " << clr << ui->contourColorWidget->getColor();
 }
 
 void MainWindow::on_zoomSpinbox_valueChanged(double newScaleCoeff)
@@ -320,14 +327,19 @@ void MainWindow::on_zoomRatioSlider_valueChanged(int value)
 
 //Файл атрибутов - парсинг .csv файла
 //TODo : пренести в файл модели
-void MainWindow::on_openAttrAct_triggered(bool checked)
+void MainWindow::on_openAttrAct_triggered()
 {
-    updateAccessState(ui->openAttrAct, ui->openAttrBut, !checked, checked);
+    updateAccessState(ui->openAttrAct, ui->openAttrBut, false, true);
 
     ui->tabWidget->setCurrentIndex(2);
     csvModel = new QStandardItemModel(this);
     csvModel->setColumnCount(18);
     //TODO: добавить заголовки из проксирования
+
+
+//    for (int i =0; i < 15; i++)
+//        csvModel->setHorizontalHeaderLabels(QStringList() << Attribute::displayName(AtributeCode::B))
+
     //csvModel->setHorizontalHeaderLabels(QStringList() << "Марка" << "Модель" << "Цена");
     ui->attrTbleView->setModel(csvModel);
 
@@ -357,13 +369,19 @@ void MainWindow::on_openAttrAct_triggered(bool checked)
 
 void MainWindow::on_contourWidthSlider_sliderMoved(int position)
 {
+    qDebug() << "this is position: " << position;
     //TODO: Связать со слотом объекта на обновление ширины контура
 }
 
 void MainWindow::on_pushButton_clicked()
 {
-    foreach (auto objOnImg, model->getObjectsOnImage())
-    {
-        scene->addPixmap(objOnImg.getContourPixmap());
-    }
+    //FIXME::sert
+//    foreach (auto objOnImg, model->getObjectsOnImage())
+//    {
+//        qDebug() << objOnImg.id() << objOnImg.getInternalRect();
+//        //scene->addRect(objOnImg.getInternalRect(), QPen(QColor(Qt::red)));
+//        //viewer->update();
+//       // viewer->show();
+
+//    }
 }

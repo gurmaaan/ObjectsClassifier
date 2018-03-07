@@ -42,18 +42,23 @@ private slots:
     void on_openDataBut_toggled(bool checked);
     void on_openImgBut_toggled(bool checked);
     void on_openAttrBut_toggled(bool checked);
-    void on_openDataAct_triggered(bool checked);
-    void on_openImgAct_triggered(bool checked);
-    void on_zoomRatioSlider_sliderMoved(int position);
-    void on_zoomSpinbox_valueChanged(double newScaleCoeff);
+    void on_closeBut_clicked();
+
+    void on_openDataAct_triggered( );
+    void on_openImgAct_triggered( );
+    void on_openAttrAct_triggered( );
+    void on_closeAct_triggered( );
+
     void on_keepRatioBut_toggled(bool checked);
     void on_ignoreRatioBut_toggled(bool checked);
+
     void on_zoomInAct_triggered();
     void on_zoomOutAct_triggered();
-    void on_closeBut_clicked();
-    void on_closeAct_triggered(bool checked);
+
     void on_zoomRatioSlider_valueChanged(int value);
-    void on_openAttrAct_triggered(bool checked);
+    void on_zoomRatioSlider_sliderMoved(int position);
+    void on_zoomSpinbox_valueChanged(double newScaleCoeff);
+
     void on_contourWidthSlider_sliderMoved(int position);
 
     void on_pushButton_clicked();

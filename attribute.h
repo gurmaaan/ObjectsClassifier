@@ -48,8 +48,11 @@ signals:
 
 public slots:
 
+
 private:
-    QString displayName(AttributeCode code);
+    AttributeCode code;
+    QString displayName;
+    int numInCsv;
 };
 
 #endif // ATTRIBUTE_H

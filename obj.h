@@ -7,6 +7,9 @@
 #include <QVector>
 #include <QDebug>
 #include <QDataStream>
+#include <QColor>
+#include <QImage>
+#include <QIcon>
 
 //TODO:2 - в объекте прописать методы возвращающие полигоны, кисти, цвета и тд
 //TODO:3 - в моделе прописать создание полигон айтемов, формирование вектора полигон айтемов и их апдейт по сигналам главного окна
@@ -30,18 +33,16 @@ public:
     //Диструктор по умолчанию
     ~Obj();
 
-    int _minOX = 0, _minOY = 0, _maxOX = 0, _maxOY = 0;
-    int _minСX = 0, _minСY = 0, _maxСX = 0, _maxСY = 0;
     //Перегрузка оператора равенства
-    Obj& operator = (const Obj &ob);
+    Obj &operator =(const Obj &ob);
 
     //Хеширование (получене уникального числа для объекта) по id. id <==> primary key
-    inline uint qHash(const Obj &ob);
+    uint qHash(const Obj &ob);
 
     QVector<QPoint> getInternalPoits() const;
     void setInternalPoits(const QVector<QPoint> &internalPoits);
 
-    QVector<QPoint> contourPointns() const;
+    QVector<QPoint> getContourPointns() const;
     void setContourPointns(const QVector<QPoint> &contourPointns);
 
     void pushInternalPoint(QPoint point);
@@ -50,71 +51,44 @@ public:
     void pushContourPoint(QPoint point);
     void pushContourPoint(int x, int y);
 
+    QRect getInternalRect() const;
+    QRect getContourRect() const;
+
     int id() const;
     void setId(int id);
-
-    //-----количество точек------
-    int getInternalPointsCount() const;
-    void setIntPointsCount(int getInternalPointsCount);
-
-    int contourPointsCount() const;
-    void setContourPointsCount(int contourPointsCount);
-
-    //----Цвет подсветки
-    QColor getInternalColor();
-    void setInternalColor(QColor &internalColor);
-
-    QColor getContourColor();
-    void setContourColor(QColor &contourColor);
 
     //----Ширина контура-------
     int getContourWidth();
     void setContourWidth(int contourWidth);
 
-    //---Куски изображения содержащие объект
-    QPixmap getInternalPixmap() ;
-    void setInternalPixmap(QPixmap &internalPixmap);
+    QColor getContourColor() const;
+    void setContourColor(const QColor &contourColor);
 
-    QPixmap getObjectIcon(QVector<QPoint> points);
+    QColor getInternalColor() const;
+    void setInternalColor(const QColor &internalColor);
 
-    int getAreaWidth(QVector<QPoint> points);
-    int getAreaHeight(QVector<QPoint> points);
-    int getMinX(QVector<QPoint> points);
-    int getMaxX(QVector<QPoint> points);
-    int getMinY(QVector<QPoint> points);
-    int getMaxY(QVector<QPoint> points);
+    QPixmap getInternalPixmap() const;
+    void setInternalPixmap(const QPixmap &internalPixmap);
 
-    QPixmap getContourPixmap();
-    void setContourPixmap(QPixmap &contourPixmap);
-
-    void setMinСX(int minСX);
-    void setMinСY(int minСY);
-    void setMaxСX(int maxСX);
-    void setMaxСY(int maxСY);
-
-    void setMinOX(int minOX);
-    void setMinOY(int minOY);
-    void setMaxOX(int maxOX);
-    void setMaxOY(int maxOY);
+    QPixmap getContourPixmap() const;
+    void setContourPixmap(const QPixmap &contourPixmap);
 
 private:
     int _id;
-    int _intPointsCount;
-    int _contourPointsCount;
 
     QVector<QPoint> _internalPoints;
     QVector<QPoint> _contourPoints;
+
+    QRect getAreaRect(QVector<QPoint> points) const;
 
     //Отображение внутренних точек
     QColor _internalColor;
     QPixmap _internalPixmap;
 
-
     //Отображение контурных точек
     QColor _contourColor;
     int _contourWidth;
     QPixmap _contourPixmap;
-
 };
 
 Q_DECLARE_METATYPE(Obj);

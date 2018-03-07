@@ -2,6 +2,7 @@
 #define DATAMODEL_H
 
 #include "obj.h"
+#include "attribute.h"
 
 #include <QObject>
 #include <QImage>
@@ -14,7 +15,7 @@
 #include <QString>
 #include <QMessageBox>
 #include <QStandardItemModel>
-
+#include <QPainter>
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QGraphicsPolygonItem>
@@ -47,6 +48,10 @@ public:
 
     QVector<Obj> getObjectsOnImage() const;
 
+    QString getAttrsFilePath() const;
+
+
+    QStringList getAttributesDisplaNames() const;
 
 public slots:
     void setObjectsVisible(bool state);
@@ -57,6 +62,7 @@ signals:
     void pathDataLoaded(QString newPath);
     void objCountChanged(int newCount);
     void incrementProgress(int newValue);
+    void pathAttrLoaded(QString newPath);
 
 private:
     QImage _image;
@@ -64,17 +70,22 @@ private:
     int _objCount;
     void setObjCount(int objCount);
 
+    //--файл изображения
     QString _imageFilePath;
     void setImagePath(const QString &imageFilePath);
 
+    //Файл точек (данных) от Егора
     QString _dataFilePath;
     QString readFileToString(const QString &dataFilePath);
     void setDataFilePath(const QString &dataFilePath);
-    QString _attrsFilePath;
 
     QVector<Obj> _objectsOnImage;
-//    QVector<QGraphicsPolygonItem> _visibleInterpritation;
 
+    //Файл аттрибутов (дескрипторов) от Слайка
+    QString _attrsFilePath;
+    void setAttrsFilePath(const QString &attrsFilePath);
+
+    //----------Модель три вьюхи
     QStandardItemModel *_model;
     QStandardItemModel *initModel();
 
@@ -84,7 +95,7 @@ private:
     QStandardItem *addIntegerItem(QStandardItem *parent, const QString& name, const int& value);
     QStandardItem *addMainHeadingItem(QStandardItemModel *parentModel, const QStringList& headerList);
 
-    void addMetaObjectItem(QStandardItem *parentObj, const Obj& ob);
+    void addMetaObjectItem(QStandardItem *parentObj, const Obj &ob);
     void addPointsObjectItem(QStandardItem *parentMetaItem, const QVector<QPoint> &points);
 
 };
