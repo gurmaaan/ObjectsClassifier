@@ -13,6 +13,8 @@
 #include <QResizeEvent>
 #include <QPolygonF>
 #include <QColor>
+#include <QTreeView>
+#include <QStandardPaths>
 
 #include "datamodel.h"
 #include "widgets/colorwidget.h"

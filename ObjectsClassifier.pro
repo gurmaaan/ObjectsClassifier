@@ -32,8 +32,9 @@ SOURCES += \
     obj.cpp \
     datamodel.cpp \
     widgets/colorwidget.cpp \
-    widgets/imagesizeviewer.cpp \
-    attribute.cpp
+    attribute.cpp \
+    widgets/histogramwidget.cpp \
+    widgets/imagesizewidget.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -42,8 +43,9 @@ HEADERS += \
     datamodel.h \
     widgets/colorwidget.h \
     const.h \
-    widgets/imagesizeviewer.h \
-    attribute.h
+    attribute.h \
+    widgets/histogramwidget.h \
+    widgets/imagesizewidget.h
 
 RESOURCES += \
         sources.qrc
@@ -53,4 +55,5 @@ win32: RC_FILE = iconsource.rc
 FORMS += \
         mainwindow.ui \
     widgets/colorwidget.ui \
-    widgets/imagesizeviewer.ui
+    widgets/histogramwidget.ui \
+    widgets/imagesizewidget.ui

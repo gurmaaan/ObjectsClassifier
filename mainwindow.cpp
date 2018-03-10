@@ -45,7 +45,7 @@ void MainWindow::updateViewer(const QPixmap &pixmap, double scaleCoeff, Qt::Aspe
     int oldW = pixmap.size().width();
     int oldH = pixmap.size().height();
 
-    //FIXME: деление на объект - костыль тк ресайзилось при увелечение коэффициента и тд
+    //NOTE: деление на объект - костыль тк ресайзилось при увелечение коэффициента и тд
     double newW = static_cast<double>(oldW) / scaleCoeff;
     double newH = static_cast<double>(oldH) / scaleCoeff;
 
@@ -161,15 +161,17 @@ void MainWindow::on_openDataAct_triggered( )
             ui->dataFileProgressBar->setMaximum(model->objCount());
 
             ui->tree_data->setModel( model->getStandardItemtModel() );
-            ui->tree_data->resizeColumnToContents(0);
-            ui->tree_data->resizeColumnToContents(1);
+
+            ui->tree_data->header()->setSectionResizeMode(QHeaderView::Stretch);
+//            ui->tree_data->resizeColumnToContents(1);
+
             ui->dataFileProgressBar->setValue(model->objCount());
 
             foreach(auto obj, model->getObjectsOnImage())
             {
                 //FIXME: Assert QLista
-                scene->addPixmap(obj.getInternalPixmap());
-                viewer->show();
+//                scene->addPixmap(obj.getInternalPixmap());
+//                viewer->show();
             }
         }
     }

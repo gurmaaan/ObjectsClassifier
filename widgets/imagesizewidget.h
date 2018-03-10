@@ -1,24 +1,24 @@
-#ifndef IMAGESIZEVIEWER_H
-#define IMAGESIZEVIEWER_H
+#ifndef IMAGESIZEWIDGET_H
+#define IMAGESIZEWIDGET_H
 
 #include <QWidget>
 
 namespace Ui {
-class ImageSizeViewer;
+class ImageSizeWidget;
 }
 
-class ImageSizeViewer : public QWidget
+class ImageSizeWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit ImageSizeViewer(QWidget *parent = 0);
-    ~ImageSizeViewer();
+    explicit ImageSizeWidget(QWidget *parent = 0);
+    ~ImageSizeWidget();
 
     void setImage(const QImage &image);
 
 private:
-    Ui::ImageSizeViewer *ui;
+    Ui::ImageSizeWidget *ui;
     int _h;
     int _w;
     long int _total;

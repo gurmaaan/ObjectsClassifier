@@ -37,4 +37,10 @@
     </qresource>
     <qresource prefix="/view"/>
     <qresource prefix="/about"/>
+    <qresource prefix="/type">
+        <file>icons/bright_type_ic.png</file>
+        <file>icons/geom_type_ic.png</file>
+        <file>icons/text_type_ic.png</file>
+    </qresource>
+    <qresource prefix="/"/>
 </RCC>

@@ -1,19 +1,19 @@
-#include "imagesizeviewer.h"
-#include "ui_imagesizeviewer.h"
+#include "imagesizewidget.h"
+#include "ui_imagesizewidget.h"
 
-ImageSizeViewer::ImageSizeViewer(QWidget *parent) :
+ImageSizeWidget::ImageSizeWidget(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::ImageSizeViewer)
+    ui(new Ui::ImageSizeWidget)
 {
     ui->setupUi(this);
 }
 
-ImageSizeViewer::~ImageSizeViewer()
+ImageSizeWidget::~ImageSizeWidget()
 {
     delete ui;
 }
 
-void ImageSizeViewer::setImage(const QImage &image)
+void ImageSizeWidget::setImage(const QImage &image)
 {
     int width = image.size().width();
     int height = image.size().height();
@@ -22,19 +22,19 @@ void ImageSizeViewer::setImage(const QImage &image)
     setTotal(static_cast<long int>(width * height));
 }
 
-void ImageSizeViewer::setH(int h)
+void ImageSizeWidget::setH(int h)
 {
     _h = h;
     ui->hSpin->setValue(h);
 }
 
-void ImageSizeViewer::setW(int w)
+void ImageSizeWidget::setW(int w)
 {
     _w = w;
     ui->wSpin->setValue(w);
 }
 
-void ImageSizeViewer::setTotal(long total)
+void ImageSizeWidget::setTotal(long total)
 {
     _total = total;
     ui->totalSpin->setValue(total);

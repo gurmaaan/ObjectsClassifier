@@ -1,11 +1,5 @@
 #include "attribute.h"
 
-Attribute::Attribute(QObject *parent) : QObject(parent)
-{
-
-
-}
-
 //static QString Attribute::displayName(AttributeCode code)
 //{
 //    QString name = "";
@@ -65,3 +59,14 @@ Attribute::Attribute(QObject *parent) : QObject(parent)
 //    }
 //    return name;
 //}
+
+Attribute::Attribute(Code code)
+    : _code(code)
+{
+
+}
+
+Attribute::Attribute(const int code)
+{
+    _code = static_cast<Code>(code);
+}

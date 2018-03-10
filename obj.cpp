@@ -8,7 +8,7 @@ Obj::Obj(const int id)
 {
 
 }
-
+//Посмотреть про список инициализации и тд
 Obj::Obj(const Obj &other)
 {
     _id = other.id();
@@ -169,6 +169,11 @@ QPixmap Obj::getContourPixmap() const
 void Obj::setContourPixmap(const QPixmap &contourPixmap)
 {
     _contourPixmap = contourPixmap;
+}
+
+void Obj::appendDescriptor(Attribute::Code code)
+{
+    
 }
 
 QRect Obj::getAreaRect(QVector<QPoint> points) const

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1011</width>
-    <height>1111</height>
+    <height>1108</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,11 +27,11 @@
    <set>QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks|QMainWindow::GroupedDragging</set>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_10">
+   <layout class="QVBoxLayout" name="verticalLayout_7">
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>3</number>
       </property>
       <property name="documentMode">
        <bool>true</bool>
@@ -44,25 +44,6 @@
         <string>Изображение</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
-         <widget class="QLabel" name="label">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>50</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>TextLabel</string>
-          </property>
-         </widget>
-        </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
@@ -81,16 +62,22 @@
          </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_13">
+         <layout class="QHBoxLayout" name="horizontalLayout_10">
           <item>
-           <widget class="ImageSizeViewer" name="imageSizeWidget" native="true">
-            <property name="minimumSize">
+           <widget class="ImageSizeWidget" name="imageSizeWidget" native="true"/>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
              <size>
-              <width>400</width>
-              <height>0</height>
+              <width>40</width>
+              <height>20</height>
              </size>
             </property>
-           </widget>
+           </spacer>
           </item>
           <item>
            <widget class="QPushButton" name="pushButton">
@@ -161,6 +148,9 @@
            <widget class="QCheckBox" name="dataViewIconsCheck">
             <property name="text">
              <string>Иконки</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -363,59 +353,39 @@
        <attribute name="title">
         <string>Гистограммы</string>
        </attribute>
-       <widget class="QScrollArea" name="scrollArea">
-        <property name="geometry">
-         <rect>
-          <x>9</x>
-          <y>9</y>
-          <width>55</width>
-          <height>48</height>
-         </rect>
-        </property>
-        <property name="verticalScrollBarPolicy">
-         <enum>Qt::ScrollBarAlwaysOn</enum>
-        </property>
-        <property name="sizeAdjustPolicy">
-         <enum>QAbstractScrollArea::AdjustToContents</enum>
-        </property>
-        <property name="widgetResizable">
-         <bool>true</bool>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignHCenter|Qt::AlignTop</set>
-        </property>
-        <widget class="QWidget" name="scrollAreaWidgetContents">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>0</y>
-           <width>36</width>
-           <height>46</height>
-          </rect>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_6">
-          <item>
-           <widget class="QStackedWidget" name="stackedWidget">
-            <widget class="QWidget" name="page">
-             <layout class="QVBoxLayout" name="verticalLayout_7">
-              <item>
-               <widget class="QCustomPlot" name="widget" native="true">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="autoFillBackground">
-                 <bool>false</bool>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-            <widget class="QWidget" name="page_2"/>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </widget>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <widget class="QScrollArea" name="scrollArea">
+          <property name="verticalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOn</enum>
+          </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QAbstractScrollArea::AdjustToContents</enum>
+          </property>
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>737</width>
+             <height>1028</height>
+            </rect>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <widget class="HistogramWidget" name="widget" native="true"/>
+            </item>
+            <item>
+             <widget class="HistogramWidget" name="widget_2" native="true"/>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -785,7 +755,7 @@
   </widget>
   <widget class="QDockWidget" name="dock_object">
    <property name="enabled">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="floating">
     <bool>false</bool>
@@ -834,6 +804,9 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="dock_contour">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="features">
     <set>QDockWidget::DockWidgetMovable</set>
    </property>
@@ -1145,21 +1118,21 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>QCustomPlot</class>
-   <extends>QWidget</extends>
-   <header>external/qcustomplot.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>ColorWidget</class>
    <extends>QWidget</extends>
    <header>widgets/colorwidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>ImageSizeViewer</class>
+   <class>ImageSizeWidget</class>
    <extends>QWidget</extends>
-   <header>widgets/imagesizeviewer.h</header>
+   <header>widgets/imagesizewidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>HistogramWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/histogramwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

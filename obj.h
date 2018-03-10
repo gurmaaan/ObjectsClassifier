@@ -11,6 +11,8 @@
 #include <QImage>
 #include <QIcon>
 
+#include "attribute.h"
+
 //TODO:2 - в объекте прописать методы возвращающие полигоны, кисти, цвета и тд
 //TODO:3 - в моделе прописать создание полигон айтемов, формирование вектора полигон айтемов и их апдейт по сигналам главного окна
 //TODO:4 - в главном окне прописать метод обновления сцены = вьюхи по сигналам обновления из модели
@@ -73,6 +75,8 @@ public:
     QPixmap getContourPixmap() const;
     void setContourPixmap(const QPixmap &contourPixmap);
 
+    void appendDescriptor(Attribute::Code code);
+
 private:
     int _id;
 
@@ -89,6 +93,8 @@ private:
     QColor _contourColor;
     int _contourWidth;
     QPixmap _contourPixmap;
+
+    QVector<Attribute> _descriptors;
 };
 
 Q_DECLARE_METATYPE(Obj);
