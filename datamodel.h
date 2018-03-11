@@ -40,8 +40,6 @@ public:
     int objCount() const;
     QString dataFilePath() const;
 
-    void resizeHeaderItem(int newWidth);
-
     void pushObject(Obj &ob);
 
     QStandardItemModel *getStandardItemtModel() const;
@@ -49,9 +47,12 @@ public:
     QVector<Obj> getObjectsOnImage() const;
 
     QString getAttrsFilePath() const;
+    QStandardItemModel *getAttrModel() const;
+    void loadObjectsAttr(const QString &attrFilePath);
+    int objAttrCount() const;
 
-
-    QStringList getAttributesDisplaNames() const;
+    void pushObjectAttributeById(int id, Attribute atr);
+    void pushObjectAttributeById(int id, Code code, int value);
 
 public slots:
     void setObjectsVisible(bool state);
@@ -60,9 +61,15 @@ public slots:
 signals:
     void pathImgLoaded(QString newPath);
     void pathDataLoaded(QString newPath);
+    void pathAttrLoaded(QString newPath);
+
     void objCountChanged(int newCount);
     void incrementProgress(int newValue);
-    void pathAttrLoaded(QString newPath);
+
+    void objAttrCountChanged(int newValue);
+    void incrementAttrProgress(int newValue);
+
+    void dataAndAttrFilesMatch(bool ok);
 
 private:
     QImage _image;
@@ -98,6 +105,9 @@ private:
     void addMetaObjectItem(QStandardItem *parentObj, const Obj &ob);
     void addPointsObjectItem(QStandardItem *parentMetaItem, const QVector<QPoint> &points);
 
+    //----------Модель таблицы аттриббутов (дескрипторов)
+    QStandardItemModel *_attrModel;
+    QStandardItemModel *initAttrModel();
 };
 
 #endif // DATAMODEL_H

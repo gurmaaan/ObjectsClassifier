@@ -65,12 +65,13 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_attrTableViewRadio_toggled(bool checked);
+    void on_attrTreeModelRadio_toggled(bool checked);
+
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
     QGraphicsView *viewer;
-
-    QStandardItemModel *csvModel;
 
     void initColorWidgets();
     QString requiredPath(QDir currentDir, const QString &redirect);

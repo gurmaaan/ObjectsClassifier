@@ -12,6 +12,10 @@
 #define POINT_ITEM_SIZE QSize(100,30)
 #endif
 
+#ifndef ATTR_COUNT
+#define ATTR_COUNT 15
+#endif
+
 DataModel::DataModel(QObject *parent) : QObject(parent)
 {
     _objCount = 0;
@@ -22,6 +26,7 @@ QStandardItemModel *DataModel::getStandardItemtModel() const
     return _model;
 }
 
+//Инициализация главной модели (tree виджета)
 QStandardItemModel *DataModel::initModel()
 {
     QStandardItemModel *model = new QStandardItemModel(0, 4);
@@ -41,6 +46,7 @@ void DataModel::addObjectRootItem(QStandardItemModel *model, const Obj &ob)
 
     QStandardItem *objectRoot = new QStandardItem(0, 4);
 
+    //TODO: перенести получение иконки в объект
     QRect iconRect = ob.getInternalRect();
     int w = iconRect.width();
     int h = iconRect.height();
@@ -89,6 +95,7 @@ QStandardItem *DataModel::addHeadingItem(QStandardItem *parent, const QStringLis
     return itemsList.first();
 }
 
+//Добавление строки вида "название параметра" : "значение параметра" целого числа
 QStandardItem *DataModel::addIntegerItem(QStandardItem *parent, const QString &name, const int &value)
 {
     QStringList itemsStringList;
@@ -148,6 +155,69 @@ void DataModel::addPointsObjectItem(QStandardItem *parentMetaItem, const QVector
     parentMetaItem->appendRows(pointsList);
 }
 
+//Возвращает модель таблицы файла аттрибутов
+QStandardItemModel *DataModel::getAttrModel() const
+{
+    return _attrModel;
+}
+
+
+int DataModel::objAttrCount() const
+{
+    return _attrModel->rowCount();
+}
+
+void DataModel::pushObjectAttributeById(int id, Attribute atr)
+{
+    for(auto ob : _objectsOnImage)
+        if (ob.id() == id)
+            ob.appendDescriptor(atr);
+}
+
+void DataModel::pushObjectAttributeById(int id, Code code, int value)
+{
+    foreach(auto ob, _objectsOnImage)
+        if (ob.id() == id)
+            ob.appendDescriptor(code, value);
+
+}
+
+//Инициализация модели атрибутов
+QStandardItemModel *DataModel::initAttrModel()
+{
+    QStandardItemModel *model = new QStandardItemModel(0, ATTR_COUNT +1);
+
+    QStringList headerStringList;
+    headerStringList << "ID";
+    model->setHorizontalHeaderItem(0, new QStandardItem(headerStringList.first()));
+
+    QList<QStandardItem *> itemsList;
+    int colNum = 1;
+    for(Code c = Code::BrRAv; c != Code::NonAssigned; c++)
+    {
+        Attribute tempAtr(c);
+        QString colName = tempAtr.name();
+        headerStringList << colName;
+        model->setHorizontalHeaderItem(colNum, new QStandardItem(headerStringList.at(colNum)));
+        model->horizontalHeaderItem(colNum)->setTextAlignment(Qt::AlignVCenter);
+        colNum++;
+    }
+
+    //model->setHorizontalHeaderLabels(headerStringList);
+
+    QFont newFont(model->horizontalHeaderItem(0)->font());
+    newFont.setBold(true);
+
+    for(int i = 0; i < model->columnCount(); i++)
+    {
+        model->horizontalHeaderItem(i)->setFont(newFont);
+        model->horizontalHeaderItem(i)->setSizeHint(QSize(150,50));
+    }
+
+    _attrModel = model;
+    return model;
+}
+
 int DataModel::objCount() const
 {
     return _objCount;
@@ -161,73 +231,6 @@ void DataModel::setObjCount(int objCount)
 QString DataModel::dataFilePath() const
 {
     return _dataFilePath;
-}
-
-void DataModel::resizeHeaderItem(int newWidth)
-{
-    qDebug() << "Skip warning" << newWidth;
-    //TODO: Выравнивание ширины строк по ширине виджета
-    //this->getStandardItemtModel()->ro
-}
-
-void DataModel::pushObject(Obj &ob)
-{
-    _objectsOnImage.append(ob);
-    //qDebug() << ob;
-
-    addObjectRootItem(_model, ob);
-}
-
-void DataModel::setDataFilePath(const QString &dataFilePath)
-{
-    if (!dataFilePath.isEmpty())
-    {
-        _dataFilePath = dataFilePath;
-        emit pathDataLoaded(_dataFilePath);
-    }
-    else
-    {
-        QMessageBox::critical(0, "Ошибка чтения файла", "Невозможно прочитать файл данных, строка содержащая путь некорректна");
-    }
-}
-
-void DataModel::setAttrsFilePath(const QString &attrsFilePath)
-{
-    if(!attrsFilePath.isEmpty())
-    {
-        _attrsFilePath = attrsFilePath;
-        emit pathAttrLoaded(attrsFilePath);
-    }
-    else
-    {
-        QMessageBox::critical(0, "Ошибка чтения файла", "Невозможно прочитать файл аттрибутов, строка содержащая путь некорректна");
-    }
-}
-
-QString DataModel::getAttrsFilePath() const
-{
-    return _attrsFilePath;
-}
-
-
-QVector<Obj> DataModel::getObjectsOnImage() const
-{
-    return _objectsOnImage;
-}
-
-//Слот реагирующий на сигнал виджета отображения объектов
-//Если приъходит истина, посылает виджету главного окна QGraphicsPolygonItem сигнал обновления вьювера с ново   й сцйеной
-void DataModel::setObjectsVisible(bool state)
-{
-    if (state && !_objectsOnImage.isEmpty())
-    {
-       // foreach (auto)
-    }
-}
-
-QString DataModel::imageFilePath() const
-{
-    return _imageFilePath;
 }
 
 //Загрузка точек из файла
@@ -258,11 +261,167 @@ void DataModel::loadObjectsData(const QString &dataFilePath)
         for (int j = indOfC + 1; j < pointsFullList.count(); j+=2)
             ob.pushContourPoint(pointsFullList.at(j).toInt(), pointsFullList.at(j+1).toInt());
 
-        double progress = static_cast<double>(objectsStringList.indexOf(objFullString)) *
-                static_cast<double>(100) / static_cast<double>(objCount()) ;
-        emit incrementProgress(static_cast<int>(round(progress)));
+        emit incrementProgress(objectsStringList.indexOf(objFullString) + 1);
         pushObject(ob);
     }
+}
+
+//Загрузка аттрибутов из файла csv
+void DataModel::loadObjectsAttr(const QString &attrFilePath)
+{
+    //Если объекты загружены (в модели больше одной строк т.е. есть что-то помимо заголовка)
+    if ( _model->rowCount() > 1)
+    {
+        _attrModel = initAttrModel();
+        setAttrsFilePath(attrFilePath);
+
+        QFile file(attrFilePath);
+        if (!file.open(QIODevice::ReadOnly))
+        {
+            qDebug() << file.errorString();
+        } else
+        {
+            QTextStream in(&file);
+            int rowCounter = 0;
+            QString line = in.readLine(); //пропустили первую строку с заголовками
+            while (!in.atEnd())
+            {
+                QString line = in.readLine();
+                emit objAttrCountChanged(rowCounter++);
+
+                qDebug() << rowCounter;
+                QList<QStandardItem *> standardItemsList;
+                QStringList rowList = line.split(";", QString::SkipEmptyParts);
+
+                if (rowList.count() < ATTR_COUNT)
+                    return;
+                else
+                {
+                    //Сохраняю нулевой элемент массива содержащий id
+                    int id = rowList.first().split(".").first().toInt();
+                    QStandardItem *idItem = new QStandardItem(rowList.first());
+                    idItem->setData(id, Qt::EditRole);
+                    standardItemsList << idItem;
+
+                    //Беру индекс массива как номер колонки в файле. В свою очередь Code = 0 <=> colNum = 1
+                    for (Code c = Code::BrRAv; c <= Code::GeomPerim; c++)
+                    {
+                        Attribute atr(c);
+
+                        QString itemString(rowList.at( atr.colNum() ).split("," , QString::SkipEmptyParts).first().toInt());
+                        QStandardItem *item = new QStandardItem();
+
+                        if ( c >= Code::BrRAv && c <= Code::BrBAv)
+                        {
+                            QColor bgClr = atr.interpritatedColor(c, itemString.toInt() );
+                            //item->setText(itemString);
+                            item->setData(Qt::AlignCenter, Qt::TextAlignmentRole);
+                            item->setData(itemString, Qt::ToolTipRole);
+                            item->setData(itemString.toInt(), Qt::DisplayRole);
+                            item->setData(bgClr, Qt::DecorationRole);
+                            item->setData(bgClr, Qt::BackgroundColorRole);
+
+                            standardItemsList << item;
+                        }
+
+
+                    }
+
+                    _attrModel->appendRow(standardItemsList);
+                }
+
+//                int colCount = rowList.count();
+//                int currentId = rowList.first().toInt();
+
+//                //rowList.removeFirst();
+
+//                for (QString itemString : rowList)
+//                {
+//                    if (!rowList.indexOf(itemString))
+//                        break;
+//                    if (itemString != " ")
+//                    {
+//                        QStandardItem *item = new QStandardItem(itemString);
+//                    //item->setSizeHint(META_ITEM_SIZE);
+
+//                        standardItemsList.append(item);
+//                    }
+//                }
+
+//                _attrModel->appendRow(standardItemsList);
+            }
+            file.close();
+//        if (rowCounter == objCount())
+//            emit dataAndAttrFilesMatch(true);
+//        else
+//            emit dataAndAttrFilesMatch(false);
+        }
+    }
+}
+
+void DataModel::pushObject(Obj &ob)
+{
+    _objectsOnImage.append(ob);
+    //qDebug() << ob;
+
+    addObjectRootItem(_model, ob);
+}
+
+//Проверяет что строка пути не пустая и устанавливает аттрибут пути модели в переданный параметр
+void DataModel::setDataFilePath(const QString &dataFilePath)
+{
+    if (!dataFilePath.isEmpty())
+    {
+        _dataFilePath = dataFilePath;
+        emit pathDataLoaded(_dataFilePath);
+    }
+    else
+    {
+        QMessageBox::critical(0, "Ошибка чтения файла", "Невозможно прочитать файл данных, строка содержащая путь некорректна");
+    }
+}
+
+//TODO: объединить эти 2 метода в один универсальный
+
+//Проверяет что строка пути к файлу атрибутов не пустая и копирует переданный параметр в поле модели
+void DataModel::setAttrsFilePath(const QString &attrsFilePath)
+{
+    if(!attrsFilePath.isEmpty())
+    {
+        _attrsFilePath = attrsFilePath;
+        emit pathAttrLoaded(_attrsFilePath);
+    }
+    else
+    {
+        QMessageBox::critical(0, "Ошибка чтения файла", "Невозможно прочитать файл аттрибутов, строка содержащая путь некорректна");
+    }
+}
+
+QString DataModel::getAttrsFilePath() const
+{
+    return _attrsFilePath;
+}
+
+//Главный метод - возвращает массив объектов
+QVector<Obj> DataModel::getObjectsOnImage() const
+{
+    return _objectsOnImage;
+}
+
+//Слот реагирующий на сигнал виджета отображения объектов
+//Если приъходит истина, посылает виджету главного окна QGraphicsPolygonItem сигнал обновления вьювера с ново   й сцйеной
+void DataModel::setObjectsVisible(bool state)
+{
+    if (state && !_objectsOnImage.isEmpty())
+    {
+       // TODO: отображение скрытие объектов
+        // foreach (auto)
+    }
+}
+
+QString DataModel::imageFilePath() const
+{
+    return _imageFilePath;
 }
 
 //Инициализация поля с путем файла из строки

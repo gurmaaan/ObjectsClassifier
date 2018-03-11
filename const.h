@@ -9,8 +9,16 @@
 #define EXTRA_DAT_PATH QString("ObjectsClassifier/data")
 #endif
 
+#ifndef DAT_EXT
+#define DAT_EXT QString("DAT(*.dat)")
+#endif
+
 #ifndef EXTRA_ATTR_PATH
 #define EXTRA_ATTR_PATH QString("ObjectsClassifier/attributes")
+#endif
+
+#ifndef ATTR_EXT
+#define ATTR_EXT QString("CSV(*.csv)")
 #endif
 
 #define TFS ";;"

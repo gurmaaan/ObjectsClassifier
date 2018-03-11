@@ -21,15 +21,33 @@ MainWindow::MainWindow(QWidget *parent) :
     tabifyDockWidget(ui->dock_scale, ui->dock_object);
     tabifyDockWidget(ui->dock_scale, ui->dock_contour);
 
-    connect(model, &DataModel::pathImgLoaded, ui->img_path_lineEdit, &QLineEdit::setText);
-    connect(model, &DataModel::pathDataLoaded, ui->dataPathLineEdit, &QLineEdit::setText);
-    connect(model, &DataModel::objCountChanged, ui->dataObjectsCountSpinBox, &QSpinBox::setValue);
-    connect(model, &DataModel::incrementProgress, ui->dataFileProgressBar, &QProgressBar::setValue);
+    connect(model, &DataModel::pathImgLoaded,
+            ui->img_path_lineEdit, &QLineEdit::setText);
+    connect(model, &DataModel::pathDataLoaded,
+            ui->dataPathLineEdit, &QLineEdit::setText);
+    connect(model, &DataModel::pathAttrLoaded,
+            ui->attrPathLineEdit, &QLineEdit::setText);
 
-    connect(ui->objectColorWidget, &ColorWidget::viewStateChanged, model, &DataModel::setObjectsVisible);
-    connect(ui->objectColorWidget, &ColorWidget::colorChenged, this, &MainWindow::updateObjColor);
-    connect(ui->contourColorWidget, &ColorWidget::colorChenged, this, &MainWindow::updateContourColor);
+    connect(model, &DataModel::objCountChanged,
+            ui->dataObjectsCountSpinBox, &QSpinBox::setMaximum);
+    connect(model, &DataModel::objCountChanged,
+            ui->dataFileProgressBar, &QProgressBar::setMaximum);
+    connect(model, &DataModel::incrementProgress,
+            ui->dataFileProgressBar, &QProgressBar::setValue);
+    connect(model, &DataModel::incrementProgress,
+            ui->dataObjectsCountSpinBox, &QSpinBox::setValue);
 
+    connect(model, &DataModel::objAttrCountChanged,
+            ui->dataObjectsCountSpinBox, &QSpinBox::setValue);
+//    connect(model, &DataModel::incrementAttrProgress,
+//            ui->attrFileProgressBar, &QProgressBar::setValue);
+
+    connect(ui->objectColorWidget, &ColorWidget::viewStateChanged,
+            model, &DataModel::setObjectsVisible);
+    connect(ui->objectColorWidget, &ColorWidget::colorChenged,
+            this, &MainWindow::updateObjColor);
+    connect(ui->contourColorWidget, &ColorWidget::colorChenged,
+            this, &MainWindow::updateContourColor);
 }
 
 MainWindow::~MainWindow()
@@ -72,7 +90,9 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 void MainWindow::on_openImgBut_toggled(bool checked)
 {
     ui->openImgAct->triggered(checked);
+    //Запуск автоматизации открытия разных файлов
     ui->openDataAct->triggered(checked);
+    ui->openAttrAct->triggered(checked);
 }
 
 void MainWindow::on_openDataBut_toggled(bool checked)
@@ -114,19 +134,25 @@ void MainWindow::on_openImgAct_triggered( )
 
     ui->tabWidget->setCurrentIndex(0);
 
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Select image file"), requiredPath(QDir::current(), EXTRA_PIC_PATH), N_F_ALL);
+    QString fileName = QFileDialog::getOpenFileName(this,
+                                                    tr("Select image file"),
+                                                    requiredPath(QDir::current(), EXTRA_PIC_PATH),
+                                                    N_F_ALL);
     if (!fileName.isEmpty())
     {
         QImage image(fileName);
         if (image.isNull())
         {
-             QMessageBox::information(this, tr("Image Viewer"), tr("Cannot load %1.").arg(fileName));
+             QMessageBox::information(this,
+                                      tr("Image Viewer"),
+                                      tr("Cannot load %1.").arg(fileName));
              return;
         }
         else
         {
             updateViewer(QPixmap(fileName), ui->zoomSpinbox->value(), checkedRatio());
             model->setImage(fileName);
+
             ui->dock_scale->setEnabled(true);
             ui->imageSizeWidget->setImage(QImage(fileName));
             ui->tabWidget->setCurrentIndex(0);
@@ -138,34 +164,38 @@ void MainWindow::on_openImgAct_triggered( )
 void MainWindow::on_openDataAct_triggered( )
 {
     //TODO: добавить иконки в качестве части изображения
-    updateAccessState(ui->openDataAct, ui->openDataBut, false, true);
+    //(updated) поправить чтобы ровненько по центру
+    updateAccessState(ui->openDataAct, ui->openDataBut, false);
     updateAccessState(ui->openAttrAct, ui->openAttrBut, true);
+
     ui->dock_contour->setEnabled(true);
     ui->dock_object->setEnabled(true);
+    ui->dock_scale->setEnabled(true);
+
     ui->tabWidget->setCurrentIndex(1);
 
     QString fileName = QFileDialog::getOpenFileName(this,
                                                     tr("Select data file"),
-                                                    requiredPath(QDir::current(),
-                                                    EXTRA_DAT_PATH), "DAT(*.dat)");
+                                                    requiredPath(QDir::current(),EXTRA_DAT_PATH),
+                                                    DAT_EXT);
     if (!fileName.isEmpty())
     {
         model->loadObjectsData(fileName);
         if (model->dataFilePath() != fileName || model->objCount() == 0)
         {
-            QMessageBox::information(this, tr("Error"), tr("Cannot load %1.").arg(fileName));
+            QMessageBox::information(this,
+                                     tr("Error"),
+                                     tr("Cannot load %1.").arg(fileName));
             return;
 
         } else
         {
             ui->dataFileProgressBar->setMaximum(model->objCount());
-
+            ui->dataObjectsCountSpinBox->setMaximum(model->objCount());
             ui->tree_data->setModel( model->getStandardItemtModel() );
-
             ui->tree_data->header()->setSectionResizeMode(QHeaderView::Stretch);
-//            ui->tree_data->resizeColumnToContents(1);
 
-            ui->dataFileProgressBar->setValue(model->objCount());
+            //ui->dataFileProgressBar->setValue(model->objCount());
 
             foreach(auto obj, model->getObjectsOnImage())
             {
@@ -173,6 +203,42 @@ void MainWindow::on_openDataAct_triggered( )
 //                scene->addPixmap(obj.getInternalPixmap());
 //                viewer->show();
             }
+        }
+    }
+}
+
+
+//TODO : пренести в файл модели
+void MainWindow::on_openAttrAct_triggered()
+{
+    updateAccessState(ui->openAttrAct, ui->openAttrBut, false);
+
+    ui->tabWidget->setCurrentIndex(2);
+
+    QString fileName = QFileDialog::getOpenFileName(this,
+                                                    tr("Select Attributes file"),
+                                                    requiredPath(QDir::current(), EXTRA_ATTR_PATH),
+                                                    ATTR_EXT);
+    if (!fileName.isEmpty())
+    {
+        model->loadObjectsAttr(fileName);
+        if (model->getAttrsFilePath() != fileName)
+        {
+            QMessageBox::critical(this,
+                                  tr("Error"),
+                                  tr("Cannot load %1").arg(fileName));
+            return;
+        } else
+        {
+            ui->attrCountSpinbox->setMaximum(model->objAttrCount());
+
+            ui->attrFileProgressBar->setMaximum(model->objAttrCount());
+
+            ui->attrTbleView->setModel( model->getAttrModel() );
+
+            ui->attrTbleView->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+            ui->attrTbleView->setWordWrap(true);
+            ui->attrTbleView->horizontalHeader()->setTextElideMode(Qt::ElideMiddle);
         }
     }
 }
@@ -190,14 +256,15 @@ void MainWindow::initColorWidgets()
 void MainWindow::on_zoomRatioSlider_sliderMoved(int position)
 {
     double sameNonIntPos = static_cast<double>(position) / static_cast<double>(100);
+    setScaleCoeff(sameNonIntPos);
+    ui->zoomSpinbox->setValue(sameNonIntPos);
+}
 
-    int compare = static_cast<int>(position - scaleCoeff() * 100);
-
-    if (compare != 0)
-    {
-        setScaleCoeff(sameNonIntPos);
-        ui->zoomSpinbox->setValue(sameNonIntPos);
-    }
+void MainWindow::on_zoomRatioSlider_valueChanged(int value)
+{
+    double sameNonIntVal = static_cast<double>(value) / static_cast<double>(100);
+    setScaleCoeff(sameNonIntVal);
+    ui->zoomSpinbox->setValue(sameNonIntVal);
 }
 
 double MainWindow::scaleCoeff() const
@@ -212,7 +279,6 @@ void MainWindow::setScaleCoeff(double newScaleCoeff)
 
 //При любом изменении цвета виджета происходит перерисовка полигона на сцене
 //За то отображается и впринципе объект отвечает прозрачность
-//
 void MainWindow::updateObjColor(QColor clr)
 {
     qDebug() << "I would like to fix warnings with" << clr.red();
@@ -226,10 +292,11 @@ void MainWindow::updateContourColor(QColor clr)
 void MainWindow::on_zoomSpinbox_valueChanged(double newScaleCoeff)
 {
     //BUG: когда меняется содержимое spin box'a , слайдер не двигается
-    int compare = static_cast<int>(newScaleCoeff - scaleCoeff());
-    if (compare != 0)
-        setScaleCoeff(newScaleCoeff);
+//    int compare = static_cast<int>(newScaleCoeff - scaleCoeff());
+//    if (compare != 0)
+//        setScaleCoeff(newScaleCoeff);
 
+    setScaleCoeff(newScaleCoeff);
     updateViewer(model->pixmap(), scaleCoeff(), checkedRatio());
 }
 
@@ -314,65 +381,9 @@ void MainWindow::on_zoomOutAct_triggered()
     ui->zoomSpinbox->setValue(newCoeff);
 }
 
-void MainWindow::on_zoomRatioSlider_valueChanged(int value)
-{
-    double sameNonIntVal = static_cast<double>(value) / static_cast<double>(100);
-
-    int compare = static_cast<int>(sameNonIntVal - scaleCoeff());
-
-    if (compare != 0)
-    {
-        setScaleCoeff(sameNonIntVal);
-        ui->zoomSpinbox->setValue(sameNonIntVal);
-    }
-}
-
-//Файл атрибутов - парсинг .csv файла
-//TODo : пренести в файл модели
-void MainWindow::on_openAttrAct_triggered()
-{
-    updateAccessState(ui->openAttrAct, ui->openAttrBut, false, true);
-
-    ui->tabWidget->setCurrentIndex(2);
-    csvModel = new QStandardItemModel(this);
-    csvModel->setColumnCount(18);
-    //TODO: добавить заголовки из проксирования
-
-
-//    for (int i =0; i < 15; i++)
-//        csvModel->setHorizontalHeaderLabels(QStringList() << Attribute::displayName(AtributeCode::B))
-
-    //csvModel->setHorizontalHeaderLabels(QStringList() << "Марка" << "Модель" << "Цена");
-    ui->attrTbleView->setModel(csvModel);
-
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Select attributes file"), requiredPath(QDir::current(), EXTRA_ATTR_PATH), "CSV(*.csv)");
-
-    QFile file(fileName);
-    if (!file.open(QIODevice::ReadOnly)) {
-        qDebug() << file.errorString();
-    }
-    else {
-        QTextStream in(&file);
-        // Считываем данные до конца файла
-        while (!in.atEnd())
-        {
-        // ... построчно
-            QString line = in.readLine();
-            QList<QStandardItem *> standardItemsList;
-            for (QString item : line.split(";"))
-            {
-                standardItemsList.append(new QStandardItem(item));
-            }
-            csvModel->insertRow(csvModel->rowCount(), standardItemsList);
-            file.close();
-        }
-    }
-}
-
 void MainWindow::on_contourWidthSlider_sliderMoved(int position)
 {
-    qDebug() << "this is position: " << position;
-    //TODO: Связать со слотом объекта на обновление ширины контура
+    //ui->zoomRatioSlider->setValue(position);
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -386,4 +397,17 @@ void MainWindow::on_pushButton_clicked()
 //       // viewer->show();
 
 //    }
+}
+
+//переключение отображения модели атрибутов
+void MainWindow::on_attrTableViewRadio_toggled(bool checked)
+{
+    int activeTab = checked ? 2 : 1;
+    ui->tabWidget->setCurrentIndex(activeTab);
+}
+
+void MainWindow::on_attrTreeModelRadio_toggled(bool checked)
+{
+    int activeTab = checked ? 1 : 2;
+    ui->tabWidget->setCurrentIndex(activeTab);
 }

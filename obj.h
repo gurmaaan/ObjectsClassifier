@@ -38,14 +38,13 @@ public:
     //Перегрузка оператора равенства
     Obj &operator =(const Obj &ob);
 
-    //Хеширование (получене уникального числа для объекта) по id. id <==> primary key
-    uint qHash(const Obj &ob);
-
     QVector<QPoint> getInternalPoits() const;
     void setInternalPoits(const QVector<QPoint> &internalPoits);
 
     QVector<QPoint> getContourPointns() const;
     void setContourPointns(const QVector<QPoint> &contourPointns);
+
+
 
     void pushInternalPoint(QPoint point);
     void pushInternalPoint(int x, int y);
@@ -75,7 +74,8 @@ public:
     QPixmap getContourPixmap() const;
     void setContourPixmap(const QPixmap &contourPixmap);
 
-    void appendDescriptor(Attribute::Code code);
+    void appendDescriptor(Code code, int val);
+    void appendDescriptor(Attribute attribute);
 
 private:
     int _id;

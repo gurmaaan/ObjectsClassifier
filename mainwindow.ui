@@ -31,7 +31,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>2</number>
       </property>
       <property name="documentMode">
        <bool>true</bool>
@@ -342,10 +342,63 @@
             </property>
            </spacer>
           </item>
+          <item>
+           <widget class="QCheckBox" name="filesMutchCheckBox">
+            <property name="text">
+             <string>Файлы совпадают</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
         <item>
-         <widget class="QTableView" name="attrTbleView"/>
+         <widget class="QTableView" name="attrTbleView">
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">text-align: center</string>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAsNeeded</enum>
+          </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QAbstractScrollArea::AdjustToContents</enum>
+          </property>
+          <property name="alternatingRowColors">
+           <bool>false</bool>
+          </property>
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectRows</enum>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="textElideMode">
+           <enum>Qt::ElideMiddle</enum>
+          </property>
+          <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+          <property name="cornerButtonEnabled">
+           <bool>false</bool>
+          </property>
+          <attribute name="horizontalHeaderCascadingSectionResizes">
+           <bool>true</bool>
+          </attribute>
+          <attribute name="horizontalHeaderStretchLastSection">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="verticalHeaderVisible">
+           <bool>false</bool>
+          </attribute>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -578,6 +631,9 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="focusPolicy">
+    <enum>Qt::StrongFocus</enum>
+   </property>
    <property name="features">
     <set>QDockWidget::DockWidgetMovable</set>
    </property>
@@ -644,6 +700,9 @@
           </item>
           <item>
            <widget class="QSlider" name="zoomRatioSlider">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="minimum">
              <number>1</number>
             </property>
@@ -1136,6 +1195,33 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>zoomRatioSlider</tabstop>
+  <tabstop>img_path_lineEdit</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>graphicsView</tabstop>
+  <tabstop>dataObjectsCountSpinBox</tabstop>
+  <tabstop>dataViewIconsCheck</tabstop>
+  <tabstop>dataPathLineEdit</tabstop>
+  <tabstop>tree_data</tabstop>
+  <tabstop>attrPathLineEdit</tabstop>
+  <tabstop>attrCountSpinbox</tabstop>
+  <tabstop>attrTableViewRadio</tabstop>
+  <tabstop>attrTreeModelRadio</tabstop>
+  <tabstop>filesMutchCheckBox</tabstop>
+  <tabstop>attrTbleView</tabstop>
+  <tabstop>scrollArea</tabstop>
+  <tabstop>openImgBut</tabstop>
+  <tabstop>openDataBut</tabstop>
+  <tabstop>openAttrBut</tabstop>
+  <tabstop>closeBut</tabstop>
+  <tabstop>ignoreRatioBut</tabstop>
+  <tabstop>keepRatioBut</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>zoomSpinbox</tabstop>
+  <tabstop>contourWidthSlider</tabstop>
+  <tabstop>contourWidthSpin</tabstop>
+ </tabstops>
  <resources>
   <include location="sources.qrc"/>
  </resources>

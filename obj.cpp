@@ -8,7 +8,7 @@ Obj::Obj(const int id)
 {
 
 }
-//Посмотреть про список инициализации и тд
+//NOTE: Посмотреть про список инициализации и тд
 Obj::Obj(const Obj &other)
 {
     _id = other.id();
@@ -41,11 +41,6 @@ Obj &Obj::operator = (const Obj &ob)
     {
         return *this;
     }
-}
-
-uint Obj::qHash(const Obj &ob)
-{
-    return qHash(ob.id());
 }
 
 QVector<QPoint> Obj::getInternalPoits() const
@@ -171,9 +166,19 @@ void Obj::setContourPixmap(const QPixmap &contourPixmap)
     _contourPixmap = contourPixmap;
 }
 
-void Obj::appendDescriptor(Attribute::Code code)
+void Obj::appendDescriptor(Code code, int val)
 {
-    
+    if(code != Code::NonAssigned)
+    {
+        Attribute attr(code, val);
+        _descriptors.append(attr);
+    }
+}
+
+void Obj::appendDescriptor(Attribute attribute)
+{
+    if (attribute.getCode() != Code::NonAssigned)
+        _descriptors.append(attribute);
 }
 
 QRect Obj::getAreaRect(QVector<QPoint> points) const
