@@ -23,7 +23,6 @@
 #include <QFont>
 
 //TODO : Поправить сортировку чисел (вопрос на стековерфлоу)
-//TODO : Перенести сюда загрузку файла дескрипторов
 class DataModel : public QObject
 {
     Q_OBJECT
@@ -56,7 +55,7 @@ public:
 
 public slots:
     void setObjectsVisible(bool state);
-
+    void synchModels(bool state);
 
 signals:
     void pathImgLoaded(QString newPath);

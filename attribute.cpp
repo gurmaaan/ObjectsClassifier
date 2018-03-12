@@ -1,7 +1,7 @@
 #include "attribute.h"
 
 #ifndef TRANSP
-#define TRANSP QColor(255, 255, 255, 0)
+#define TRANSP QColor(255, 255, 255, 255)
 #endif
 
 Attribute::Attribute(Code code)

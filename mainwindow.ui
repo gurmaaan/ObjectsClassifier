@@ -343,7 +343,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QCheckBox" name="filesMutchCheckBox">
+           <widget class="QCheckBox" name="filesMatchCheckBox">
             <property name="text">
              <string>Файлы совпадают</string>
             </property>
@@ -366,7 +366,7 @@
            <enum>QAbstractScrollArea::AdjustToContents</enum>
           </property>
           <property name="alternatingRowColors">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="selectionBehavior">
            <enum>QAbstractItemView::SelectRows</enum>
@@ -1208,7 +1208,7 @@
   <tabstop>attrCountSpinbox</tabstop>
   <tabstop>attrTableViewRadio</tabstop>
   <tabstop>attrTreeModelRadio</tabstop>
-  <tabstop>filesMutchCheckBox</tabstop>
+  <tabstop>filesMatchCheckBox</tabstop>
   <tabstop>attrTbleView</tabstop>
   <tabstop>scrollArea</tabstop>
   <tabstop>openImgBut</tabstop>

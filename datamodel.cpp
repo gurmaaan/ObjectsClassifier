@@ -198,8 +198,10 @@ QStandardItemModel *DataModel::initAttrModel()
         Attribute tempAtr(c);
         QString colName = tempAtr.name();
         headerStringList << colName;
-        model->setHorizontalHeaderItem(colNum, new QStandardItem(headerStringList.at(colNum)));
-        model->horizontalHeaderItem(colNum)->setTextAlignment(Qt::AlignVCenter);
+        QStandardItem *it = new QStandardItem(headerStringList.at(colNum));
+        it->setData(Qt::AlignHCenter, Qt::TextAlignmentRole);
+
+        model->setHorizontalHeaderItem(colNum, it);
         colNum++;
     }
 
@@ -308,53 +310,53 @@ void DataModel::loadObjectsAttr(const QString &attrFilePath)
                     {
                         Attribute atr(c);
 
-                        QString itemString(rowList.at( atr.colNum() ).split("," , QString::SkipEmptyParts).first().toInt());
+                        QString itemToolTip(rowList.at( atr.colNum()) );
+                        QString itemString = itemToolTip.replace(" ", "");
+                        QStringList itemStringSeparated = itemString.split(".", QString::SkipEmptyParts);
+                        int itemIntVal = itemStringSeparated.first().toInt();
+                        double itemDoubleVal = itemString.toDouble();
+
                         QStandardItem *item = new QStandardItem();
+                        item->setData(Qt::AlignCenter, Qt::TextAlignmentRole);
+                        item->setData(itemToolTip, Qt::ToolTipRole);
 
                         if ( c >= Code::BrRAv && c <= Code::BrBAv)
                         {
-                            QColor bgClr = atr.interpritatedColor(c, itemString.toInt() );
-                            //item->setText(itemString);
-                            item->setData(Qt::AlignCenter, Qt::TextAlignmentRole);
-                            item->setData(itemString, Qt::ToolTipRole);
-                            item->setData(itemString.toInt(), Qt::DisplayRole);
-                            item->setData(bgClr, Qt::DecorationRole);
-                            item->setData(bgClr, Qt::BackgroundColorRole);
+                            QColor bgClr = atr.interpritatedColor(c, itemIntVal);
 
-                            standardItemsList << item;
+                            item->setData(itemIntVal, Qt::DisplayRole);
+                            item->setData(bgClr, Qt::DecorationRole);
+
+                        }else if (c >= Code::BrRsko && c <= Code::BrBsko)
+                        {
+                            item->setData(itemDoubleVal, Qt::DisplayRole);
+
+                        }else if (c >= Code::TextRmps && c <= Code::TextBser)
+                        {
+
+                            item->setData(itemIntVal, Qt::DisplayRole);
+                        }else if (c == Code::GeomForm)
+                        {
+
+                            item->setData(itemDoubleVal, Qt::DisplayRole);
+                        }else if (c >= Code::GeomSquare)
+                        {
+                            item->setData(itemIntVal, Qt::DisplayRole);
                         }
 
+                        standardItemsList << item;
 
                     }
-
+                    emit incrementAttrProgress(rowCounter);
                     _attrModel->appendRow(standardItemsList);
                 }
 
-//                int colCount = rowList.count();
-//                int currentId = rowList.first().toInt();
-
-//                //rowList.removeFirst();
-
-//                for (QString itemString : rowList)
-//                {
-//                    if (!rowList.indexOf(itemString))
-//                        break;
-//                    if (itemString != " ")
-//                    {
-//                        QStandardItem *item = new QStandardItem(itemString);
-//                    //item->setSizeHint(META_ITEM_SIZE);
-
-//                        standardItemsList.append(item);
-//                    }
-//                }
-
-//                _attrModel->appendRow(standardItemsList);
             }
             file.close();
-//        if (rowCounter == objCount())
-//            emit dataAndAttrFilesMatch(true);
-//        else
-//            emit dataAndAttrFilesMatch(false);
+
+            connect(this, SIGNAL(dataAndAttrFilesMatch), this, SLOT(synchModels));
+            bool equalState = (rowCounter == objCount());
+            emit dataAndAttrFilesMatch(equalState);
         }
     }
 }
@@ -417,6 +419,14 @@ void DataModel::setObjectsVisible(bool state)
        // TODO: отображение скрытие объектов
         // foreach (auto)
     }
+}
+
+//TODO: преобразование строки табличной модели в списочную моодель с вертикальными хедерами
+//Добавить в три модель лист
+void DataModel::synchModels(bool state)
+{
+    if(state)
+        qDebug() << "Xui";
 }
 
 QString DataModel::imageFilePath() const

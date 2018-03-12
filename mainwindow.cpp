@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
     tabifyDockWidget(ui->dock_scale, ui->dock_object);
     tabifyDockWidget(ui->dock_scale, ui->dock_contour);
 
+    //line Edit'ы с путями файлом
     connect(model, &DataModel::pathImgLoaded,
             ui->img_path_lineEdit, &QLineEdit::setText);
     connect(model, &DataModel::pathDataLoaded,
@@ -28,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(model, &DataModel::pathAttrLoaded,
             ui->attrPathLineEdit, &QLineEdit::setText);
 
+    //Файл точек
     connect(model, &DataModel::objCountChanged,
             ui->dataObjectsCountSpinBox, &QSpinBox::setMaximum);
     connect(model, &DataModel::objCountChanged,
@@ -37,17 +39,25 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(model, &DataModel::incrementProgress,
             ui->dataObjectsCountSpinBox, &QSpinBox::setValue);
 
-    connect(model, &DataModel::objAttrCountChanged,
-            ui->dataObjectsCountSpinBox, &QSpinBox::setValue);
-//    connect(model, &DataModel::incrementAttrProgress,
-//            ui->attrFileProgressBar, &QProgressBar::setValue);
+    //Файл аттрибутов
+    connect(model, &DataModel::objCountChanged,
+            ui->attrCountSpinbox, &QSpinBox::setMaximum);
+    connect(model, &DataModel::objCountChanged,
+            ui->attrFileProgressBar, &QProgressBar::setMaximum);
+    connect(model, &DataModel::incrementAttrProgress,
+           ui->attrFileProgressBar, &QProgressBar::setValue);
 
+    //Цыета контура и объекта
     connect(ui->objectColorWidget, &ColorWidget::viewStateChanged,
             model, &DataModel::setObjectsVisible);
     connect(ui->objectColorWidget, &ColorWidget::colorChenged,
             this, &MainWindow::updateObjColor);
     connect(ui->contourColorWidget, &ColorWidget::colorChenged,
             this, &MainWindow::updateContourColor);
+
+    //Совпадение файлов
+    connect(model, &DataModel::dataAndAttrFilesMatch,
+            ui->filesMatchCheckBox, &QCheckBox::setChecked);
 }
 
 MainWindow::~MainWindow()
@@ -195,8 +205,6 @@ void MainWindow::on_openDataAct_triggered( )
             ui->tree_data->setModel( model->getStandardItemtModel() );
             ui->tree_data->header()->setSectionResizeMode(QHeaderView::Stretch);
 
-            //ui->dataFileProgressBar->setValue(model->objCount());
-
             foreach(auto obj, model->getObjectsOnImage())
             {
                 //FIXME: Assert QLista
@@ -230,14 +238,10 @@ void MainWindow::on_openAttrAct_triggered()
             return;
         } else
         {
-            ui->attrCountSpinbox->setMaximum(model->objAttrCount());
-
-            ui->attrFileProgressBar->setMaximum(model->objAttrCount());
-
             ui->attrTbleView->setModel( model->getAttrModel() );
-
+            //Позволяет пользователю ресайзить
             ui->attrTbleView->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
-            ui->attrTbleView->setWordWrap(true);
+            //То в каком месте появляются точки сокращения
             ui->attrTbleView->horizontalHeader()->setTextElideMode(Qt::ElideMiddle);
         }
     }
@@ -291,11 +295,6 @@ void MainWindow::updateContourColor(QColor clr)
 
 void MainWindow::on_zoomSpinbox_valueChanged(double newScaleCoeff)
 {
-    //BUG: когда меняется содержимое spin box'a , слайдер не двигается
-//    int compare = static_cast<int>(newScaleCoeff - scaleCoeff());
-//    if (compare != 0)
-//        setScaleCoeff(newScaleCoeff);
-
     setScaleCoeff(newScaleCoeff);
     updateViewer(model->pixmap(), scaleCoeff(), checkedRatio());
 }
