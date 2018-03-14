@@ -71,6 +71,7 @@ public:
 
     Attribute(const int code);
     Attribute(Code code, int value);
+    Attribute(Code code, QVariant value);
     Attribute(const int code, int value);
 
     ~Attribute();
@@ -78,6 +79,7 @@ public:
     Attribute &operator =(const Attribute &at);
     QString name() const;
     int colNum() const;
+
 
     QVariant value() const;
 
@@ -96,6 +98,10 @@ public:
     void setAtrColor(const QColor &value);
 
     QColor getAtrColor();
+
+    static int columnFromCode(Code code);
+    //возвращает истину если аттрибут целочисленный, ложь если дробный
+    static bool isInt(Code code);
 
 signals:
 

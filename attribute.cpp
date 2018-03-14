@@ -44,6 +44,16 @@ Attribute::Attribute(Code code, int value)
     _type = genAttrType(code);
 }
 
+Attribute::Attribute(Code code, QVariant value)
+    : _code(code),
+      _value(value)
+{
+    _name = genDisplayName(code);
+    _colNum = genColumnNumber(code);
+    setAtrColor(TRANSP);
+    _type = genAttrType(code);
+}
+
 Attribute::Attribute(const int code, int value)
     : _value(value)
 {
@@ -166,6 +176,133 @@ QColor Attribute::getAtrColor()
     return _atrColor;
 }
 
+int Attribute::columnFromCode(Code code)
+{
+    int colNum = 0;
+
+    switch (code) {
+    case Code::BrRAv:
+       colNum = 1;
+       break;
+    case Code::BrGAv:
+       colNum = 2;
+       break;
+    case Code::BrBAv:
+       colNum = 3;
+       break;
+
+    case Code::BrRsko:
+       colNum = 3;
+       break;
+    case Code::BrGsko:
+       colNum = 4;
+       break;
+    case Code::BrBsko:
+       colNum = 5;
+       break;
+
+    case Code::TextRmps:
+       colNum = 10;
+       break;
+    case Code::TextGmps:
+       colNum = 11;
+       break;
+    case Code::TextBmps:
+       colNum = 12;
+       break;
+
+    case Code::TextRser:
+       colNum = 13;
+       break;
+    case Code::TextGser:
+       colNum = 14;
+       break;
+    case Code::TextBser:
+       colNum = 15;
+       break;
+
+    case Code::GeomForm:
+       colNum = 16;
+       break;
+    case Code::GeomSquare:
+       colNum = 17;
+       break;
+    case Code::GeomPerim:
+       colNum = 18;
+       break;
+    default:
+        colNum = 0;
+        break;
+    }
+
+    return colNum;
+
+}
+
+bool Attribute::isInt(Code code)
+{
+    bool integerValue = false;
+
+    switch (code)
+    {
+        case Code::BrRAv:
+            integerValue = true;
+            break;
+        case Code::BrGAv:
+            integerValue = true;
+            break;
+        case Code::BrBAv:
+            integerValue = true;
+            break;
+
+        case Code::BrRsko:
+            integerValue = false;
+            break;
+        case Code::BrGsko:
+            integerValue = false;
+            break;
+        case Code::BrBsko:
+            integerValue = false;
+            break;
+
+        case Code::TextRmps:
+            integerValue = true;
+            break;
+        case Code::TextGmps:
+            integerValue = true;
+            break;
+        case Code::TextBmps:
+            integerValue = true;
+            break;
+
+        case Code::TextRser:
+            integerValue = true;
+            break;
+        case Code::TextGser:
+            integerValue = true;
+            break;
+        case Code::TextBser:
+            integerValue = true;
+            break;
+
+        case Code::GeomForm:
+            integerValue = false;
+            break;
+        case Code::GeomSquare:
+            integerValue = true;
+            break;
+        case Code::GeomPerim:
+            integerValue = true;
+            break;
+
+        default:
+            integerValue = false;
+            break;
+    }
+
+    return integerValue;
+}
+
 QString Attribute::genDisplayName(Code code)
 {
     QString name = "";
@@ -192,23 +329,23 @@ QString Attribute::genDisplayName(Code code)
        break;
 
     case Code::TextRmps:
-       name = "Текстурный признак \nпо МПС для R";
+       name = "Текстурный признак \nпо МПС \nдля R";
        break;
     case Code::TextGmps:
-       name = "Текстурный признак \nпо МПС для G";
+       name = "Текстурный признак \nпо МПС \nдля G";
        break;
     case Code::TextBmps:
-       name = "Текстурный признак \nпо МПС для B";
+       name = "Текстурный признак \nпо МПС \nдля B";
        break;
 
     case Code::TextRser:
-       name = "Текстурный признак \nпо длине серии R";
+       name = "Текстурный признак \nпо длине \nсерии R";
        break;
     case Code::TextGser:
-       name = "Текстурный признак \nпо длине серии G";
+       name = "Текстурный признак \nпо длине \nсерии G";
        break;
     case Code::TextBser:
-       name = "Текстурный признак \nпо длине серии B";
+       name = "Текстурный признак \nпо длине \nсерии B";
        break;
 
     case Code::GeomForm:
@@ -370,7 +507,7 @@ Code operator++(Code& c, int)
 QDebug operator <<(QDebug dbg, const Attribute &at)
 {
     dbg << "Attribute : " << endl;
-    dbg << "\tCode:  " << at.getCode() << endl;
+    dbg << "\tCode:  " << static_cast<int>(at.getCode()) << endl;
     dbg << "\tType:  " << at.getTypeName() << endl;
     dbg << "\tName:  " << at.name() << endl;
     dbg << "\tValue: " << at.value() << endl;

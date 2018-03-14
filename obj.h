@@ -19,9 +19,8 @@
 //TODO:5 - проксирование по коду параметра всех нужных объектов
 //TODO:6 - сверка атрибутов с данными и их мерж
 //TODO:7 - кастомный виджет с 3-мя гистограммами и инфой
-//TODO:
-//TODO:8 фильтрация
-//TODO:9 группировка
+//TODO:8 - фильтрация
+//TODO:9 - группировка
 
 class Obj : public QObject
 {
@@ -74,8 +73,11 @@ public:
     QPixmap getContourPixmap() const;
     void setContourPixmap(const QPixmap &contourPixmap);
 
-    void appendDescriptor(Code code, int val);
-    void appendDescriptor(Attribute attribute);
+    void appendDescriptor(Code code, QVariant val);
+    void appendDescriptor(Attribute &attribute);
+
+    QVector<Attribute *> getDescriptors() const;
+    //void setDescriptors(const QVector<Attribute *> &descriptors);
 
 private:
     int _id;
@@ -94,7 +96,7 @@ private:
     int _contourWidth;
     QPixmap _contourPixmap;
 
-    QVector<Attribute> _descriptors;
+    QVector<Attribute*> _descriptors;
 };
 
 Q_DECLARE_METATYPE(Obj);

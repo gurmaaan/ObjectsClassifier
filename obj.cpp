@@ -166,19 +166,22 @@ void Obj::setContourPixmap(const QPixmap &contourPixmap)
     _contourPixmap = contourPixmap;
 }
 
-void Obj::appendDescriptor(Code code, int val)
+void Obj::appendDescriptor(Code code, QVariant val)
 {
     if(code != Code::NonAssigned)
     {
-        Attribute attr(code, val);
-        _descriptors.append(attr);
+        Attribute *newAttr = new Attribute(code, val);
+        appendDescriptor(*newAttr);
     }
 }
 
-void Obj::appendDescriptor(Attribute attribute)
+void Obj::appendDescriptor(Attribute &attribute)
 {
     if (attribute.getCode() != Code::NonAssigned)
-        _descriptors.append(attribute);
+    {
+        _descriptors.append(&attribute);
+       // qDebug() << "apended" << attribute;
+    }
 }
 
 QRect Obj::getAreaRect(QVector<QPoint> points) const
@@ -216,6 +219,16 @@ QRect Obj::getAreaRect(QVector<QPoint> points) const
     return rect;
 }
 
+QVector<Attribute *> Obj::getDescriptors() const
+{
+    return _descriptors;
+}
+
+//void Obj::setDescriptors(const QVector<Attribute *> &descriptors)
+//{
+//    _descriptors = descriptors;
+//}
+
 QDebug operator <<(QDebug dbg, const Obj &ob)
 {
     dbg << "Object id: " << ob.id() << endl;
@@ -235,6 +248,14 @@ QDebug operator <<(QDebug dbg, const Obj &ob)
         dbg << "\t\t" << j <<":"
             <<" (" << ob.getContourPointns().at(j).x() << " ; "
             << ob.getContourPointns().at(j).y() << ");" <<endl;
+
+    int descrCount = ob.getDescriptors().count();
+    dbg << "Descriptors: " << descrCount;
+
+    foreach(auto descriptor, ob.getDescriptors())
+    {
+        dbg << descriptor;
+    }
 
     return dbg;
 }

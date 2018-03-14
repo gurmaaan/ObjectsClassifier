@@ -17,9 +17,9 @@ MainWindow::MainWindow(QWidget *parent) :
     initColorWidgets();
     showMaximized();
 
-    //TODO : сделать активной первую табу с масштабом
-    tabifyDockWidget(ui->dock_scale, ui->dock_object);
-    tabifyDockWidget(ui->dock_scale, ui->dock_contour);
+    tabifyDockWidget(ui->dock_container, ui->dock_object);
+    tabifyDockWidget(ui->dock_container, ui->dock_contour);
+    tabifyDockWidget(ui->dock_container, ui->dock_scale);
 
     //line Edit'ы с путями файлом
     connect(model, &DataModel::pathImgLoaded,
@@ -45,9 +45,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(model, &DataModel::objCountChanged,
             ui->attrFileProgressBar, &QProgressBar::setMaximum);
     connect(model, &DataModel::incrementAttrProgress,
+            ui->attrCountSpinbox,&QSpinBox::setValue);
+    connect(model, &DataModel::incrementAttrProgress,
            ui->attrFileProgressBar, &QProgressBar::setValue);
 
-    //Цыета контура и объекта
+    //Цвета контура и объекта
     connect(ui->objectColorWidget, &ColorWidget::viewStateChanged,
             model, &DataModel::setObjectsVisible);
     connect(ui->objectColorWidget, &ColorWidget::colorChenged,
@@ -58,6 +60,10 @@ MainWindow::MainWindow(QWidget *parent) :
     //Совпадение файлов
     connect(model, &DataModel::dataAndAttrFilesMatch,
             ui->filesMatchCheckBox, &QCheckBox::setChecked);
+    connect(model, &DataModel::dataAndAttrFilesMatch,
+            model, &DataModel::synchModels);
+    connect(model, &DataModel::modelUpdated,
+            ui->tree_data, &QTreeView::setModel);
 }
 
 MainWindow::~MainWindow()
@@ -123,6 +129,7 @@ void MainWindow::on_closeBut_clicked()
 //Действие закрытия
 void MainWindow::on_closeAct_triggered()
 {
+    //FIXME : ничерта не закрывает, картинка вообще так и остается
     updateAccessState(ui->closeAct, ui->closeBut, false);
     updateAccessState(ui->openImgAct, ui->openImgBut, true);
     updateAccessState(ui->openDataAct, ui->openDataBut, false);
@@ -164,7 +171,6 @@ void MainWindow::on_openImgAct_triggered( )
             model->setImage(fileName);
 
             ui->dock_scale->setEnabled(true);
-            ui->imageSizeWidget->setImage(QImage(fileName));
             ui->tabWidget->setCurrentIndex(0);
         }
      }
@@ -203,7 +209,7 @@ void MainWindow::on_openDataAct_triggered( )
             ui->dataFileProgressBar->setMaximum(model->objCount());
             ui->dataObjectsCountSpinBox->setMaximum(model->objCount());
             ui->tree_data->setModel( model->getStandardItemtModel() );
-            ui->tree_data->header()->setSectionResizeMode(QHeaderView::Stretch);
+            ui->tree_data->header()->setSectionResizeMode(QHeaderView::Interactive);
 
             foreach(auto obj, model->getObjectsOnImage())
             {
@@ -215,8 +221,6 @@ void MainWindow::on_openDataAct_triggered( )
     }
 }
 
-
-//TODO : пренести в файл модели
 void MainWindow::on_openAttrAct_triggered()
 {
     updateAccessState(ui->openAttrAct, ui->openAttrBut, false);
@@ -240,7 +244,7 @@ void MainWindow::on_openAttrAct_triggered()
         {
             ui->attrTbleView->setModel( model->getAttrModel() );
             //Позволяет пользователю ресайзить
-            ui->attrTbleView->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+            ui->attrTbleView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
             //То в каком месте появляются точки сокращения
             ui->attrTbleView->horizontalHeader()->setTextElideMode(Qt::ElideMiddle);
         }
@@ -291,6 +295,17 @@ void MainWindow::updateObjColor(QColor clr)
 void MainWindow::updateContourColor(QColor clr)
 {
     qDebug() << "Updated contour Color: " << clr << ui->contourColorWidget->getColor();
+}
+
+//После синхронизации файлов обновляется виджет дерева
+void MainWindow::updateTreeModel(QStandardItemModel *newModel)
+{
+    if (newModel->rowCount() > 1)
+    {
+        ui->tree_data->setModel(model->getStandardItemtModel());
+        qDebug() << model->getStandardItemtModel() << newModel;
+
+    }
 }
 
 void MainWindow::on_zoomSpinbox_valueChanged(double newScaleCoeff)
@@ -382,20 +397,7 @@ void MainWindow::on_zoomOutAct_triggered()
 
 void MainWindow::on_contourWidthSlider_sliderMoved(int position)
 {
-    //ui->zoomRatioSlider->setValue(position);
-}
-
-void MainWindow::on_pushButton_clicked()
-{
-    //FIXME::sert
-//    foreach (auto objOnImg, model->getObjectsOnImage())
-//    {
-//        qDebug() << objOnImg.id() << objOnImg.getInternalRect();
-//        //scene->addRect(objOnImg.getInternalRect(), QPen(QColor(Qt::red)));
-//        //viewer->update();
-//       // viewer->show();
-
-//    }
+    qDebug() << "Когда я буду двигать слайдеро контур станет вот таклой ширины" << position;
 }
 
 //переключение отображения модели атрибутов

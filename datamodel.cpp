@@ -1,4 +1,4 @@
- #include "datamodel.h"
+#include "datamodel.h"
 
 #ifndef ROOT_ITEM_SIZE
 #define ROOT_ITEM_SIZE QSize(200,58)
@@ -31,16 +31,40 @@ QStandardItemModel *DataModel::initModel()
 {
     QStandardItemModel *model = new QStandardItemModel(0, 4);
 
+    QList<QStandardItem*> headerItemList;
+
     QStringList modelHeaders;
-    modelHeaders << "Объект" << "id" << "Ширина" << "Высота";
-    model->setHorizontalHeaderLabels(modelHeaders);
+    modelHeaders << "Объект" << "ID" << "Ширина" << "Высота";
+    foreach (QString colHeader, modelHeaders)
+    {
+        QStandardItem *colHeaderItem = new QStandardItem(colHeader);
+
+
+        QFont newFont(colHeaderItem->font());
+        newFont.setBold(true);
+        colHeaderItem->setData(newFont, Qt::FontRole);
+
+        colHeaderItem->setData(ROOT_ITEM_SIZE, Qt::SizeHintRole);
+
+        colHeaderItem->setData(Qt::AlignCenter, Qt::TextAlignmentRole);
+
+        model->setHorizontalHeaderItem( modelHeaders.indexOf(colHeader), colHeaderItem);
+    }
+
     _model = model;
 
-    return model;
+    return _model;
 }
 
 void DataModel::addObjectRootItem(QStandardItemModel *model, const Obj &ob)
 {
+    for (int i = 0; i < model->rowCount(); i++)
+    {
+        if (model->item(i, 1)->data(Qt::EditRole).toInt() == ob.id())
+        {
+            model->removeRow(i);
+        }
+    }
     QStringList objStrList;
     objStrList << "id: " << QString::number(ob.id());
 
@@ -51,6 +75,7 @@ void DataModel::addObjectRootItem(QStandardItemModel *model, const Obj &ob)
     int w = iconRect.width();
     int h = iconRect.height();
     objStrList << QString::number(w) << QString::number(h);
+
     objectRoot = addMainHeadingItem(model, objStrList);
 
     QImage icon(w, h, QImage::Format_ARGB32);
@@ -69,71 +94,120 @@ void DataModel::addObjectRootItem(QStandardItemModel *model, const Obj &ob)
 
     if( (w < 50)&&( h < 50) )
     {
+        //BUG : иконка не в центре а хз есть ли вообще
         QPixmap result(50, 50);
         result.fill(Qt::transparent);
         QPainter painter(&result);
         painter.drawPixmap(w, h, iconPixmap);
 
-        objectRoot->setIcon(QIcon(result));
+        objectRoot->setData(iconPixmap, Qt::DecorationRole);
     } else
     {
-        objectRoot->setIcon(QIcon(iconPixmap.scaled(50, 50, Qt::KeepAspectRatio)));
+        objectRoot->setData(QIcon(iconPixmap.scaled(50, 50, Qt::KeepAspectRatio)), Qt::DecorationRole);
     }
-    addMetaObjectItem(objectRoot, ob);
-    //model->appendRow();
+
+    if (ob.getDescriptors().count() > 0)
+    {
+        for(auto descr : ob.getDescriptors())
+        {
+            if (Attribute::isInt(descr->getCode()))
+            {
+                addIntegerItem(objectRoot, descr->name(), descr->value().toInt());
+            } else {
+                addDoubleItem(objectRoot, descr->name(), descr->value().toDouble());
+            }
+        }
+    }
+    addPointsHeadingItem(objectRoot, ob);
+
+    emit modelUpdated(model);
 }
 
-//Добавление строки вида "название параметра" : "значение парметра" в качестве ребенка переданного item
-QStandardItem *DataModel::addHeadingItem(QStandardItem *parent, const QStringList &headerList)
+
+//Добавление строки вида "название параметра" : "значение параметра" - целое число
+QStandardItem *DataModel::addIntegerItem(QStandardItem *parent, const QString &name, const int &value)
 {
     QList<QStandardItem*> itemsList;
-    foreach (QString itemText, headerList) {
-        QStandardItem *item = new QStandardItem(itemText);
-        itemsList.push_back(item);
-    }
+
+    itemsList << genDescrItem(name, Qt::AlignRight);
+
+    QStandardItem *dataItem = new QStandardItem();
+    dataItem->setData(value, Qt::DisplayRole);
+    dataItem->setData(META_ITEM_SIZE, Qt::SizeHintRole);
+    dataItem->setData(Qt::AlignCenter, Qt::TextAlignmentRole);
+    itemsList << dataItem;
+
     parent->appendRow(itemsList);
+
     return itemsList.first();
 }
 
-//Добавление строки вида "название параметра" : "значение параметра" целого числа
-QStandardItem *DataModel::addIntegerItem(QStandardItem *parent, const QString &name, const int &value)
+//Добавление строки вида "название параметра" : "значение параметра" - дробное число
+QStandardItem *DataModel::addDoubleItem(QStandardItem *parent, const QString &name, const double &value)
 {
-    QStringList itemsStringList;
-    itemsStringList << name << QString::number(value);
+    QList<QStandardItem*> itemsList;
 
-    return addHeadingItem(parent, itemsStringList);
+    itemsList << genDescrItem(name, Qt::AlignRight);
+
+    QStandardItem *dataItem = new QStandardItem();
+    dataItem->setData(value, Qt::EditRole);
+    dataItem->setData( QString::number(value, 'f', 2), Qt::DisplayRole);
+    dataItem->setData(META_ITEM_SIZE, Qt::SizeHintRole);
+    dataItem->setData(Qt::AlignCenter, Qt::TextAlignmentRole);
+    itemsList << dataItem;
+
+    parent->appendRow(itemsList);
+
+    return itemsList.first();
 }
+
 
 //Добавление строки вида "название параметра" : "значение парметра" в корень модели
 QStandardItem *DataModel::addMainHeadingItem(QStandardItemModel *parentModel, const QStringList& headerList)
 {
     QList<QStandardItem*> itemsList;
-    foreach (QString itemText, headerList) {
+    foreach (QString itemText, headerList)
+    {
         QStandardItem *item = new QStandardItem(itemText);
+        item->setData(Qt::AscendingOrder, Qt::InitialSortOrderRole);
 
         QFont newFont(item->font());
         newFont.setBold(true);
-        item->setFont(newFont);
+        item->setData(newFont, Qt::FontRole);
 
-        item->setSizeHint(ROOT_ITEM_SIZE);
-
+        item->setData(ROOT_ITEM_SIZE, Qt::SizeHintRole);
         itemsList.push_back(item);
     }
+
     parentModel->appendRow(itemsList);
 
     return itemsList.first();
 }
 
-void DataModel::addMetaObjectItem(QStandardItem *parent, const Obj &ob)
+//Возвращает QStandartItem просто с надписью для описания параметра
+QStandardItem *DataModel::genDescrItem(QString itemText, Qt::AlignmentFlag textAlignment, QFont::Style fontStyle)
+{
+    QStandardItem *descriptionItem = new QStandardItem(itemText);
+    descriptionItem->setData(textAlignment, Qt::TextAlignmentRole);
+    descriptionItem->setData(Qt::AlignVCenter, Qt::TextAlignmentRole);
+
+    QFont newFont(descriptionItem->font());
+    newFont.setStyle(fontStyle);
+    descriptionItem->setData(newFont, Qt::FontRole);
+
+    return descriptionItem;
+}
+
+void DataModel::addPointsHeadingItem(QStandardItem *parent, const Obj &ob)
 {
     QStandardItem *intPointsCountItem = new QStandardItem();
     intPointsCountItem = addIntegerItem(parent, "Внутренних точек: ", ob.getInternalPoits().count());
-    intPointsCountItem->setSizeHint(META_ITEM_SIZE);
+
     addPointsObjectItem(intPointsCountItem, ob.getInternalPoits());
 
     QStandardItem *contourPointsItem = new QStandardItem();
     contourPointsItem = addIntegerItem(parent, "Контурных точек: ", ob.getContourPointns().count());
-    contourPointsItem->setSizeHint(META_ITEM_SIZE);
+
     addPointsObjectItem(contourPointsItem, ob.getContourPointns());
 }
 
@@ -143,14 +217,17 @@ void DataModel::addPointsObjectItem(QStandardItem *parentMetaItem, const QVector
     int i = 1; //введено т. к. операция взятия индекса очень долгая
     for(auto point : points)
     {
-        QString pointStr = "Точка: " + QString::number(i) +" : (" + QString::number(point.x()) + " ; " + QString::number(point.y()) + ")";
-        QStandardItem *pointItem = new QStandardItem(pointStr);
-        i++;
-        pointItem->setSizeHint(POINT_ITEM_SIZE);
+        QString pointStr = "Точка: " + QString::number(i) +" : ( " + QString::number(point.x()) + " ; " + QString::number(point.y()) + " )";
+
+        QStandardItem *pointItem = new QStandardItem();
+        pointItem->setData(pointStr, Qt::DisplayRole);
+        pointItem->setData(POINT_ITEM_SIZE, Qt::SizeHintRole);
+
         addIntegerItem(pointItem, "X: ", point.x() );
         addIntegerItem(pointItem, "Y: ", point.y() );
         pointsList.push_back(pointItem);
     }
+
 
     parentMetaItem->appendRows(pointsList);
 }
@@ -174,11 +251,14 @@ void DataModel::pushObjectAttributeById(int id, Attribute atr)
             ob.appendDescriptor(atr);
 }
 
-void DataModel::pushObjectAttributeById(int id, Code code, int value)
+void DataModel::pushObjectAttributeById(int id, Code code, QVariant value)
 {
     foreach(auto ob, _objectsOnImage)
         if (ob.id() == id)
-            ob.appendDescriptor(code, value);
+        {
+            Attribute newAtr(code, value);
+            pushObjectAttributeById(id, newAtr);
+        }
 
 }
 
@@ -192,32 +272,37 @@ QStandardItemModel *DataModel::initAttrModel()
     model->setHorizontalHeaderItem(0, new QStandardItem(headerStringList.first()));
 
     QList<QStandardItem *> itemsList;
-    int colNum = 1;
-    for(Code c = Code::BrRAv; c != Code::NonAssigned; c++)
+
+    for(Code c = Code::BrRAv; c < Code::NonAssigned; c++)
     {
         Attribute tempAtr(c);
         QString colName = tempAtr.name();
         headerStringList << colName;
-        QStandardItem *it = new QStandardItem(headerStringList.at(colNum));
-        it->setData(Qt::AlignHCenter, Qt::TextAlignmentRole);
-
-        model->setHorizontalHeaderItem(colNum, it);
-        colNum++;
+        QStandardItem *it = new QStandardItem(headerStringList.at(static_cast<int>(c) + 1));
+        it->setData(Qt::AlignCenter, Qt::TextAlignmentRole);
+        model->setHorizontalHeaderItem(static_cast<int>(c) +1, it);
     }
-
-    //model->setHorizontalHeaderLabels(headerStringList);
 
     QFont newFont(model->horizontalHeaderItem(0)->font());
     newFont.setBold(true);
 
     for(int i = 0; i < model->columnCount(); i++)
     {
-        model->horizontalHeaderItem(i)->setFont(newFont);
-        model->horizontalHeaderItem(i)->setSizeHint(QSize(150,50));
+        model->horizontalHeaderItem(i)->setData(newFont, Qt::FontRole);
+        model->horizontalHeaderItem(i)->setData(META_ITEM_SIZE, Qt::SizeHintRole);
     }
 
     _attrModel = model;
     return model;
+}
+
+QStandardItem *DataModel::genCenteredStItWithToolTip(QString toolTip)
+{
+    QStandardItem *item = new QStandardItem();
+    item->setData(Qt::AlignCenter, Qt::TextAlignmentRole);
+    item->setData(toolTip, Qt::ToolTipRole);
+
+    return item;
 }
 
 int DataModel::objCount() const
@@ -239,6 +324,8 @@ QString DataModel::dataFilePath() const
 void DataModel::loadObjectsData(const QString &dataFilePath)
 {
     _model = initModel();
+    emit modelUpdated(_model);
+
     setDataFilePath(dataFilePath);
     QString fileString = readFileToString(dataFilePath);
 
@@ -291,7 +378,6 @@ void DataModel::loadObjectsAttr(const QString &attrFilePath)
                 QString line = in.readLine();
                 emit objAttrCountChanged(rowCounter++);
 
-                qDebug() << rowCounter;
                 QList<QStandardItem *> standardItemsList;
                 QStringList rowList = line.split(";", QString::SkipEmptyParts);
 
@@ -302,7 +388,8 @@ void DataModel::loadObjectsAttr(const QString &attrFilePath)
                     //Сохраняю нулевой элемент массива содержащий id
                     int id = rowList.first().split(".").first().toInt();
                     QStandardItem *idItem = new QStandardItem(rowList.first());
-                    idItem->setData(id, Qt::EditRole);
+                    idItem->setData(id, Qt::DisplayRole);
+                    idItem->setData(Qt::AlignCenter, Qt::TextAlignmentRole);
                     standardItemsList << idItem;
 
                     //Беру индекс массива как номер колонки в файле. В свою очередь Code = 0 <=> colNum = 1
@@ -311,14 +398,15 @@ void DataModel::loadObjectsAttr(const QString &attrFilePath)
                         Attribute atr(c);
 
                         QString itemToolTip(rowList.at( atr.colNum()) );
+
                         QString itemString = itemToolTip.replace(" ", "");
+                        double itemDoubleVal = itemString.toDouble();
+                        QString itemDoubleStrRound = QString::number(itemDoubleVal, 'f', 2);
+
                         QStringList itemStringSeparated = itemString.split(".", QString::SkipEmptyParts);
                         int itemIntVal = itemStringSeparated.first().toInt();
-                        double itemDoubleVal = itemString.toDouble();
 
-                        QStandardItem *item = new QStandardItem();
-                        item->setData(Qt::AlignCenter, Qt::TextAlignmentRole);
-                        item->setData(itemToolTip, Qt::ToolTipRole);
+                        QStandardItem *item = genCenteredStItWithToolTip(itemToolTip);
 
                         if ( c >= Code::BrRAv && c <= Code::BrBAv)
                         {
@@ -327,23 +415,18 @@ void DataModel::loadObjectsAttr(const QString &attrFilePath)
                             item->setData(itemIntVal, Qt::DisplayRole);
                             item->setData(bgClr, Qt::DecorationRole);
 
-                        }else if (c >= Code::BrRsko && c <= Code::BrBsko)
+                        }else
                         {
-                            item->setData(itemDoubleVal, Qt::DisplayRole);
-
-                        }else if (c >= Code::TextRmps && c <= Code::TextBser)
-                        {
-
-                            item->setData(itemIntVal, Qt::DisplayRole);
-                        }else if (c == Code::GeomForm)
-                        {
-
-                            item->setData(itemDoubleVal, Qt::DisplayRole);
-                        }else if (c >= Code::GeomSquare)
-                        {
-                            item->setData(itemIntVal, Qt::DisplayRole);
+                            if (Attribute::isInt(c))
+                            {
+                                item->setData(itemIntVal, Qt::DisplayRole);
+                            }
+                            else
+                            {
+                                item->setData(itemDoubleVal, Qt::EditRole);
+                                item->setData(itemDoubleStrRound, Qt::DisplayRole);
+                            }
                         }
-
                         standardItemsList << item;
 
                     }
@@ -354,9 +437,7 @@ void DataModel::loadObjectsAttr(const QString &attrFilePath)
             }
             file.close();
 
-            connect(this, SIGNAL(dataAndAttrFilesMatch), this, SLOT(synchModels));
-            bool equalState = (rowCounter == objCount());
-            emit dataAndAttrFilesMatch(equalState);
+            emit dataAndAttrFilesMatch((rowCounter == objCount()));
         }
     }
 }
@@ -399,6 +480,16 @@ void DataModel::setAttrsFilePath(const QString &attrsFilePath)
     }
 }
 
+//QStandardItemModel *DataModel::getModel() const
+//{
+//    return _model;
+//}
+
+void DataModel::setModel(QStandardItemModel *model)
+{
+    _model = model;
+}
+
 QString DataModel::getAttrsFilePath() const
 {
     return _attrsFilePath;
@@ -425,8 +516,66 @@ void DataModel::setObjectsVisible(bool state)
 //Добавить в три модель лист
 void DataModel::synchModels(bool state)
 {
-    if(state)
-        qDebug() << "Xui";
+    if (state && (_attrModel->rowCount() > 1) )
+    {
+        _attrModel->sort(0, Qt::AscendingOrder);
+
+        for(int i = 0; i < _attrModel->rowCount(); i++)
+        {
+            bool convertationStatus = false;
+            int idInAttr = _attrModel->item(i, 0)->data(Qt::EditRole).toInt(&convertationStatus);
+
+            if ((idInAttr == i) && convertationStatus)
+            {
+                QList<QStandardItem*> attrsModelRow;
+                QStandardItem *rootTreeObj = _model->item(i, 1);
+
+                for(Code c = Code::BrRAv; c < Code::NonAssigned; c++)
+                {
+                    QStandardItem *attrInCurrentRow = new QStandardItem();
+                    //(_attrModel->columnCount() <= static_cast<int>(Code::NonAssigned)) &&
+                    if(  _objCount >= 0)
+                    {
+                        attrInCurrentRow = _attrModel->item(i, static_cast<int>(c));
+                        attrsModelRow << attrInCurrentRow;
+
+                        QVariant dataFromAttr = attrInCurrentRow->data(Qt::EditRole);
+                        Attribute newAtr(c, dataFromAttr);
+                        pushObjectAttributeById(idInAttr, newAtr);
+
+//                       //bool converted;
+//                        if (Attribute::isInt(c))
+//                        {
+//                            addIntegerItem(rootTreeObj, newAtr.name(), newAtr.value().toInt(&converted));
+//                            qDebug() << rootTreeObj->data(Qt::DisplayRole);
+////                            qDebug() << idInAttr << " : i = " << i << "; C = " << static_cast<int>(c) << "\n"
+////                                     <<  "Integer added. Root item: " << rootTreeObj->data(Qt::DisplayRole)
+////                                      << ". Status of convertation: " << converted;
+//                        }
+//                        else
+//                        {
+//                            addDoubleItem(rootTreeObj, newAtr.name(), newAtr.value().toDouble(&converted));
+////                            qDebug() << idInAttr << " : i = " << i << "; C = " << static_cast<int>(c) << "\n"
+////                                     <<  "Double added. Root item: " << rootTreeObj->data(Qt::DisplayRole)
+////                                      << ". Status of convertation: " << converted;
+//                        }
+
+
+//                        if (!converted)
+//                           // qDebug() <<  "DataModel Error"<< "Unable to convert DataModel to TreeModel";
+
+                    }// Если колонок не больше чем кодов аттрибутов
+
+                } //обошли все столбцы
+
+            } //Если таблица правильно и по порядку отсортирована
+
+            qDebug() << _objectsOnImage.at(idInAttr);
+            //addObjectRootItem(_model, _objectsOnImage.at(idInAttr));
+        } //обошли все строки
+    } //Если сигнал был эмитирован и модель не пустая
+
+
 }
 
 QString DataModel::imageFilePath() const
@@ -448,9 +597,11 @@ void DataModel::setImagePath(const QString &imagePath)
 QString DataModel::readFileToString(const QString &dataFilePath)
 {
     QFile datafile(dataFilePath);
+    QFileInfo fi(dataFilePath);
     if ( datafile.open( QIODevice::ReadOnly) )
     {
         int t1 = QTime::currentTime().msec();
+
         //----------------------------------
         QString fileString = "";
 
@@ -463,7 +614,7 @@ QString DataModel::readFileToString(const QString &dataFilePath)
 
         int delta = t2 - t1;
 
-        qDebug() << "Считыване файла данных - завешено успешно за " << delta << " миллисекунд.";
+        qDebug() << "Считыване файла " << fi.completeBaseName() << " - завешено успешно за " << delta << " миллисекунд.";
 
         return fileString;
     }

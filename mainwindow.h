@@ -39,6 +39,7 @@ public:
 public slots:
     void updateObjColor(QColor clr);
     void updateContourColor(QColor clr);
+    void updateTreeModel(QStandardItemModel *newModel);
 
 private slots:
     void on_openDataBut_toggled(bool checked);
@@ -62,8 +63,6 @@ private slots:
     void on_zoomSpinbox_valueChanged(double newScaleCoeff);
 
     void on_contourWidthSlider_sliderMoved(int position);
-
-    void on_pushButton_clicked();
 
     void on_attrTableViewRadio_toggled(bool checked);
     void on_attrTreeModelRadio_toggled(bool checked);

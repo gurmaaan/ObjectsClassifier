@@ -8,6 +8,7 @@
 #include <QImage>
 #include <QPixmap>
 #include <QFile>
+#include <QFileInfo>
 #include <QTextStream>
 #include <QString>
 #include <QDebug>
@@ -51,7 +52,10 @@ public:
     int objAttrCount() const;
 
     void pushObjectAttributeById(int id, Attribute atr);
-    void pushObjectAttributeById(int id, Code code, int value);
+    void pushObjectAttributeById(int id, Code code, QVariant value);
+
+    //QStandardItemModel *getModel() const;
+    void setModel(QStandardItemModel *model);
 
 public slots:
     void setObjectsVisible(bool state);
@@ -69,6 +73,8 @@ signals:
     void incrementAttrProgress(int newValue);
 
     void dataAndAttrFilesMatch(bool ok);
+
+    void modelUpdated(QStandardItemModel *model);
 
 private:
     QImage _image;
@@ -96,17 +102,20 @@ private:
     QStandardItemModel *initModel();
 
     void addObjectRootItem(QStandardItemModel *model, const Obj& ob);
-
-    QStandardItem *addHeadingItem(QStandardItem *parent, const QStringList& headerList);
-    QStandardItem *addIntegerItem(QStandardItem *parent, const QString& name, const int& value);
     QStandardItem *addMainHeadingItem(QStandardItemModel *parentModel, const QStringList& headerList);
 
-    void addMetaObjectItem(QStandardItem *parentObj, const Obj &ob);
+    QStandardItem *genDescrItem(QString itemText, Qt::AlignmentFlag textAlignment = Qt::AlignRight,  QFont::Style fontStyle = QFont::StyleItalic );
+
+    QStandardItem *addIntegerItem(QStandardItem *parent, const QString& name, const int& value);
+    QStandardItem *addDoubleItem(QStandardItem *parent, const QString& name, const double& value);
+
+    void addPointsHeadingItem(QStandardItem *parentObj, const Obj &ob);
     void addPointsObjectItem(QStandardItem *parentMetaItem, const QVector<QPoint> &points);
 
     //----------Модель таблицы аттриббутов (дескрипторов)
     QStandardItemModel *_attrModel;
     QStandardItemModel *initAttrModel();
+    QStandardItem *genCenteredStItWithToolTip(QString toolTip);
 };
 
 #endif // DATAMODEL_H

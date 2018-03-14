@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1011</width>
-    <height>1108</height>
+    <height>1167</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -31,7 +31,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <property name="documentMode">
        <bool>true</bool>
@@ -58,33 +58,6 @@
           </item>
           <item>
            <widget class="QLineEdit" name="img_path_lineEdit"/>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_10">
-          <item>
-           <widget class="ImageSizeWidget" name="imageSizeWidget" native="true"/>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButton">
-            <property name="text">
-             <string>PushButton</string>
-            </property>
-           </widget>
           </item>
          </layout>
         </item>
@@ -208,6 +181,9 @@
             <width>50</width>
             <height>50</height>
            </size>
+          </property>
+          <property name="textElideMode">
+           <enum>Qt::ElideMiddle</enum>
           </property>
           <property name="uniformRowHeights">
            <bool>true</bool>
@@ -424,7 +400,7 @@
              <x>0</x>
              <y>0</y>
              <width>737</width>
-             <height>1028</height>
+             <height>1067</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -606,7 +582,7 @@
       </widget>
      </item>
      <item>
-      <spacer name="verticalSpacer">
+      <spacer name="dockFileSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
@@ -624,7 +600,7 @@
     <zorder>line</zorder>
     <zorder>closeBut</zorder>
     <zorder>openAttrBut</zorder>
-    <zorder>verticalSpacer</zorder>
+    <zorder>dockFileSpacer</zorder>
    </widget>
   </widget>
   <widget class="QDockWidget" name="dock_scale">
@@ -633,6 +609,9 @@
    </property>
    <property name="focusPolicy">
     <enum>Qt::StrongFocus</enum>
+   </property>
+   <property name="floating">
+    <bool>false</bool>
    </property>
    <property name="features">
     <set>QDockWidget::DockWidgetMovable</set>
@@ -1004,6 +983,19 @@
     </layout>
    </widget>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QDockWidget" name="dock_container">
+   <property name="features">
+    <set>QDockWidget::NoDockWidgetFeatures</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea</set>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents"/>
+  </widget>
   <action name="openDataAct">
    <property name="checkable">
     <bool>true</bool>
@@ -1173,6 +1165,7 @@
    </property>
   </action>
   <zorder>dock_file</zorder>
+  <zorder>dock_container</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -1180,12 +1173,6 @@
    <class>ColorWidget</class>
    <extends>QWidget</extends>
    <header>widgets/colorwidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ImageSizeWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/imagesizewidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -1198,12 +1185,10 @@
  <tabstops>
   <tabstop>zoomRatioSlider</tabstop>
   <tabstop>img_path_lineEdit</tabstop>
-  <tabstop>pushButton</tabstop>
   <tabstop>graphicsView</tabstop>
   <tabstop>dataObjectsCountSpinBox</tabstop>
   <tabstop>dataViewIconsCheck</tabstop>
   <tabstop>dataPathLineEdit</tabstop>
-  <tabstop>tree_data</tabstop>
   <tabstop>attrPathLineEdit</tabstop>
   <tabstop>attrCountSpinbox</tabstop>
   <tabstop>attrTableViewRadio</tabstop>
