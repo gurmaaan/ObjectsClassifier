@@ -1,55 +1,122 @@
-  Attribute::Type type = Type::NonAssigned
+  QColor codeColor = Qt::transparent;
 
   switch (code) {
-  case Code::BrRAv:
-     type = Type::Brightness;
+  case Code::BrRAv: //RED
+     codeColor = QColor(Qt::red).lighter(150);
      break;
-  case Code::BrGAv:
-     type = Type::Brightness;
+  case Code::BrGAv: //GREEN
+     codeColor = QColor(Qt::green).lighter(150);
      break;
-  case Code::BrBAv:
-     type = Type::Brightness;
-     break;
-
-  case Code::BrRsko:
-     type = Type::Brightness;
-     break;
-  case Code::BrGsko:
-     type = Type::Brightness;
-     break;
-  case Code::BrBsko:
-     type = Type::Brightness;
+  case Code::BrBAv: //BLUE
+     codeColor = QColor(Qt::blue).lighter(150); 
      break;
 
-  case Code::TextRmps:
-     type = Type::Texture;
+  case Code::BrRsko: //RED
+     codeColor =  QColor(Qt::red).lighter(150); 
      break;
-  case Code::TextGmps:
-     type = Type::Texture;
+  case Code::BrGsko: //GREEN
+     codeColor =  QColor(Qt::green).lighter(150);
      break;
-  case Code::TextBmps:
-     type = Type::Texture;
-     break;
-
-  case Code::TextRser:
-     type = Type::Texture;
-     break;
-  case Code::TextGser:
-     type = Type::Texture;
-     break;
-  case Code::TextBser:
-     type = Type::Texture;
+  case Code::BrBsko: //BLUE
+     codeColor =  QColor(Qt::blue).lighter(150); 
      break;
 
-  case Code::GeomForm:
-     type = Type::Geometrical;
+  case Code::TextRmps: //RED
+     codeColor = QColor(Qt::red).lighter(150);
+     break;
+  case Code::TextGmps: //GREEN
+     codeColor = QColor(Qt::green).lighter(150);
+     break;
+  case Code::TextBmps: //BLUE
+     codeColor = QColor(Qt::blue).lighter(150); 
+     break;
+
+  case Code::TextRser: //RED
+     codeColor = QColor(Qt::red).lighter(150);
+     break;
+  case Code::TextGser: //GREEN
+     codeColor = QColor(Qt::green).lighter(150);
+     break;
+  case Code::TextBser: //BLUE
+     codeColor = QColor(Qt::blue).lighter(150); 
+     break;
+
+  case Code::GeomForm: //GRAY
+     codeColor = QColor(Qt::lightGray);
      break;
   case Code::GeomSquare:
-     type = Type::Geometrical;
+     codeColor = QColor(Qt::lightGray);
      break;
   case Code::GeomPerim:
-     type = Type::Geometrical;
+     codeColor = QColor(Qt::lightGray);
      break;
+
+  default: 
+    codeColor = QColor(Qt::transparent);
+    break;
   }
 
-  return type;
+  return codeColor;
+
+
+
+template< typename T >
+class Enum
+{
+public:
+   class Iterator
+   {
+   public:
+      Iterator( int value ) :
+         m_value( value )
+      { }
+
+      T operator*( void ) const
+      {
+         return (T)m_value;
+      }
+
+      void operator++( void )
+      {
+         ++m_value;
+      }
+
+      bool operator!=( Iterator rhs )
+      {
+         return m_value != rhs.m_value;
+      }
+
+   private:
+      int m_value;
+   };
+
+};
+
+template< typename T >
+typename Enum<T>::Iterator begin( Enum<T> )
+{
+   return typename Enum<T>::Iterator( (int)T::First );
+}
+
+template< typename T >
+typename Enum<T>::Iterator end( Enum<T> )
+{
+   return typename Enum<T>::Iterator( ((int)T::Last) + 1 );
+}
+
+enum class Color
+{
+   Red,
+   Green,
+   Blue,
+   First = Red,
+   Last = Blue
+};
+
+int main()
+{
+   for( auto e: Enum<Color>() )
+   {
+      std::cout << ((int)e) << std::endl;
+   }
+}

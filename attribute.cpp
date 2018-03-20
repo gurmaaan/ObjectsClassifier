@@ -4,6 +4,9 @@
 #define TRANSP QColor(255, 255, 255, 255)
 #endif
 
+
+
+
 Attribute::Attribute(Code code)
     : _code(code)
 {
@@ -303,6 +306,193 @@ bool Attribute::isInt(Code code)
     return integerValue;
 }
 
+QColor Attribute::colorOf(Code code)
+{
+    QColor codeColor = Qt::transparent;
+
+    switch (code) {
+    case Code::BrRAv: //RED
+       codeColor = QColor(Qt::red).lighter(150);
+       break;
+    case Code::BrGAv: //GREEN
+       codeColor = QColor(Qt::green).lighter(150);
+       break;
+    case Code::BrBAv: //BLUE
+       codeColor = QColor(Qt::blue).lighter(150);
+       break;
+
+    case Code::BrRsko: //RED
+       codeColor =  QColor(Qt::red).lighter(150);
+       break;
+    case Code::BrGsko: //GREEN
+       codeColor =  QColor(Qt::green).lighter(150);
+       break;
+    case Code::BrBsko: //BLUE
+       codeColor =  QColor(Qt::blue).lighter(150);
+       break;
+
+    case Code::TextRmps: //RED
+       codeColor = QColor(Qt::red).lighter(150);
+       break;
+    case Code::TextGmps: //GREEN
+       codeColor = QColor(Qt::green).lighter(150);
+       break;
+    case Code::TextBmps: //BLUE
+       codeColor = QColor(Qt::blue).lighter(150);
+       break;
+
+    case Code::TextRser: //RED
+       codeColor = QColor(Qt::red).lighter(150);
+       break;
+    case Code::TextGser: //GREEN
+       codeColor = QColor(Qt::green).lighter(150);
+       break;
+    case Code::TextBser: //BLUE
+       codeColor = QColor(Qt::blue).lighter(150);
+       break;
+
+    case Code::GeomForm: //GRAY
+       codeColor = QColor(Qt::lightGray);
+       break;
+    case Code::GeomSquare:
+       codeColor = QColor(Qt::lightGray);
+       break;
+    case Code::GeomPerim:
+       codeColor = QColor(Qt::lightGray);
+       break;
+
+    default:
+      codeColor = QColor(Qt::transparent);
+      break;
+    }
+
+    return codeColor;
+}
+
+//Attribute::Type Attribute::typeOfCode(Code code)
+//{
+//    Attribute::Type type = Type::NonAssigned;
+
+//    switch (code) {
+//    case Code::BrRAv:
+//       type = Type::Brightness;
+//       break;
+//    case Code::BrGAv:
+//       type = Type::Brightness;
+//       break;
+//    case Code::BrBAv:
+//       type = Type::Brightness;
+//       break;
+
+//    case Code::BrRsko:
+//       type = Type::Brightness;
+//       break;
+//    case Code::BrGsko:
+//       type = Type::Brightness;
+//       break;
+//    case Code::BrBsko:
+//       type = Type::Brightness;
+//       break;
+
+//    case Code::TextRmps:
+//       type = Type::Texture;
+//       break;
+//    case Code::TextGmps:
+//       type = Type::Texture;
+//       break;
+//    case Code::TextBmps:
+//       type = Type::Texture;
+//       break;
+
+//    case Code::TextRser:
+//       type = Type::Texture;
+//       break;
+//    case Code::TextGser:
+//       type = Type::Texture;
+//       break;
+//    case Code::TextBser:
+//       type = Type::Texture;
+//       break;
+
+//    case Code::GeomForm:
+//       type = Type::Geometrical;
+//       break;
+//    case Code::GeomSquare:
+//       type = Type::Geometrical;
+//       break;
+//    case Code::GeomPerim:
+//       type = Type::Geometrical;
+//       break;
+//    default:
+//        type = Type::NonAssigned;
+//        break;
+//    }
+
+//    return type;
+//}
+
+QString Attribute::displayNameOf(Code code)
+{
+    QString name = "";
+
+    switch (code) {
+    case Code::BrRAv:
+        name = "Средняя яркость по R";
+       break;
+    case Code::BrGAv:
+       name = "Средняя яркость по G";
+       break;
+    case Code::BrBAv:
+       name = "Средняя яркость по B";
+       break;
+
+    case Code::BrRsko:
+       name = "СКО по R";
+       break;
+    case Code::BrGsko:
+       name = "СКО по G";
+       break;
+    case Code::BrBsko:
+       name = "СКО по B";
+       break;
+
+    case Code::TextRmps:
+       name = "Текстурный признак по МПС для R";
+       break;
+    case Code::TextGmps:
+       name = "Текстурный признак по МПС для G";
+       break;
+    case Code::TextBmps:
+       name = "Текстурный признак по МПС для B";
+       break;
+
+    case Code::TextRser:
+       name = "Текстурный признак по длине серии R";
+       break;
+    case Code::TextGser:
+       name = "Текстурный признак по длине серии G";
+       break;
+    case Code::TextBser:
+       name = "Текстурный признак по длине серии B";
+       break;
+
+    case Code::GeomForm:
+       name = "Коэффициент формы";
+       break;
+    case Code::GeomSquare:
+       name = "Пощадь";
+       break;
+    case Code::GeomPerim:
+       name = "Периметр";
+       break;
+    default:
+        name = "Неизвестный параметр";
+        break;
+    }
+
+    return name;
+}
+
 QString Attribute::genDisplayName(Code code)
 {
     QString name = "";
@@ -489,28 +679,14 @@ Attribute::Type Attribute::genAttrType(Code code)
     return type;
 }
 
-Code &operator++(Code &c)
-{
-    c = static_cast<Code>(static_cast<int>(c) + 1);
-    return c;
-}
-
-
-Code operator++(Code& c, int)
-{
-    Code old = c;
-    c = static_cast<Code>(static_cast<int>(c)+1);
-    return old;
-}
-
-
 QDebug operator <<(QDebug dbg, const Attribute &at)
 {
-    dbg << "Attribute : " << endl;
+    dbg << "Attribute";
     dbg << "\tCode:  " << static_cast<int>(at.getCode()) << endl;
-    dbg << "\tType:  " << at.getTypeName() << endl;
-    dbg << "\tName:  " << at.name() << endl;
+    dbg << "\tType:  " << at.getTypeName();
+    dbg << "\tName:  " << at.name();
     dbg << "\tValue: " << at.value() << endl;
+    dbg << "---------" << endl;
     return dbg;
 }
 
@@ -569,4 +745,33 @@ bool operator<=(const Code c1, const Code c2)
     int i2 = static_cast<int>(c2);
 
     return (i1<=i2);
+}
+
+Code &operator++(Code &c) //++code;
+{
+    c = static_cast<Code>(static_cast<int>(c) + 1);
+    return c;
+}
+
+Code operator++(Code& c, int) //code++;
+{
+    Code old = c;
+    c = static_cast<Code>(static_cast<int>(c)+1);
+    return old;
+}
+
+Code operator*(Code c)
+{
+    return c;
+}
+
+Code begin(Code c)
+{
+    return Code::First;
+}
+
+Code end(Code c)
+{
+    Code lastc = Code::Last;
+    return lastc++;
 }

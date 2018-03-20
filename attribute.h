@@ -6,6 +6,7 @@
 #include <QColor>
 #include <QVariant>
 
+
 enum class Code
 {
     //Яркостные признаки 0-2. Средняя яркость по компонентам
@@ -38,12 +39,16 @@ enum class Code
     GeomSquare,
     GeomPerim,
 
+    First=BrRAv,
+    Last=GeomPerim,
     NonAssigned
 };
 
 Code &operator++(Code& c);
 Code operator++(Code& c, int);
-
+Code operator*(Code c);
+Code begin(Code c);
+Code end(Code c);
 
 bool operator>(const Code c, const int i);
 bool operator>(const int i, const Code c);
@@ -102,6 +107,9 @@ public:
     static int columnFromCode(Code code);
     //возвращает истину если аттрибут целочисленный, ложь если дробный
     static bool isInt(Code code);
+    static QColor colorOf(Code code);
+    //static Attribute::Type typeOfCode(Code code);
+    static QString displayNameOf(Code code);
 
 signals:
 

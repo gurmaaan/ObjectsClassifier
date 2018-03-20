@@ -18,6 +18,7 @@
 
 #include "datamodel.h"
 #include "widgets/colorwidget.h"
+#include "widgets/histogramwidget.h"
 
 namespace Ui {
 class MainWindow;
@@ -35,6 +36,8 @@ public:
 
     double scaleCoeff() const;
     void setScaleCoeff(double newScaleCoeff);
+
+    void buildHist();
 
 public slots:
     void updateObjColor(QColor clr);
@@ -67,6 +70,9 @@ private slots:
     void on_attrTableViewRadio_toggled(bool checked);
     void on_attrTreeModelRadio_toggled(bool checked);
 
+
+    void on_calcButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
@@ -77,6 +83,8 @@ private:
     void updateAccessState(QAction *ac, QPushButton *bt, bool newEnableState, bool newCheckedState = false);
     void updateAccessState(QAction *ac, QRadioButton *bt, bool newEnableState, bool newCheckedState = false);
     Qt::AspectRatioMode checkedRatio();
+
+
 
     double _scaleCoeff;
     DataModel *model;

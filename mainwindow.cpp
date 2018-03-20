@@ -412,3 +412,17 @@ void MainWindow::on_attrTreeModelRadio_toggled(bool checked)
     int activeTab = checked ? 1 : 2;
     ui->tabWidget->setCurrentIndex(activeTab);
 }
+
+void MainWindow::on_calcButton_clicked()
+{
+//    QVector<int> rAvVector;
+
+//    for (int i = 0; i < ui->attrTbleView->model()->rowCount(); i++)
+//    {
+//        int avRatIRow = ui->attrTbleView->model()->
+//    }
+//    ui->widget->setArray( )
+
+    QVector<int> ravVect;
+    ravVect = model->getRangeByCode(Code::BrRAv);
+}

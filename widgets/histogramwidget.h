@@ -2,6 +2,8 @@
 #define HISTOGRAMWIDGET_H
 
 #include <QWidget>
+#include <external/qcustomplot.h>
+#include <attribute.h>
 
 namespace Ui {
 class HistogramWidget;
@@ -13,39 +15,103 @@ class HistogramWidget : public QWidget
 
 public:
     explicit HistogramWidget(QWidget *parent = 0);
+
     ~HistogramWidget();
 
 
     QString name() const;
     void setName(const QString &name);
 
-    int min() const;
-    void setMin(int min);
+    QVariant min() const;
+    void setMin(QVariant min);
 
-    int max() const;
-    void setMax(int max);
+    QVariant max() const;
+    void setMax(QVariant max);
 
-    int av() const;
-    void setAv(int av);
+    QVariant av() const;
+    void setAv(QVariant av);
 
-    //void setIntArray(QVector)
+    QVector<QVariant> array() const;
+    void setArray(const QVector<QVariant> &array, Code code);
 
-    QVector<int> array() const;
-    void setArray(const QVector<int> &array);
+    QColor chartColor() const;
+    void setChartColor(const QColor &chartColor);
+
+    Code code() const;
+    void setCode(const Code &code);
+
+    int count() const;
+    void setCount(int count);
+
+public slots:
+   // void updateType(Attribute::Type newTypeCode);
+    void updateName(QString newName);
+    void updateColor(QColor newColor);
+
+signals:
+    void minChanged(QVariant newMin);
+    void maxChanged(QVariant newMmax);
+    void countChanged(int newCount);
+    void avChanged(QVariant newAv);
+    void nameChanged(QString newName);
+    void typeChanged(Attribute::Type newTypeCode);
+    void codeChanged(Code newCode);
+    void chartColorChanged(QColor newColor);
 
 private:
     Ui::HistogramWidget *ui;
 
+    template<typename T>
+    T calcMin(const QVector<T> &array)
+    {
+        T min = array.first();
+        for(auto elem : array)
+            if ( elem < min)
+                min = elem;
+
+        return min;
+    }
+
+    template<typename T>
+    T calcMax(const QVector<T> &array)
+    {
+        T max = array.first();
+        for(auto elem : array)
+            if (elem > max)
+                max = elem;
+
+        return max;
+    }
+
+//    template<typename T>
+//    T calcAv(const QVector<T> &array)
+//    {
+//        T av = 0;
+//        T sum = 0;
+//        for(auto elem : array)
+//            sum += elem;
+
+//        av = static_cast<T>( sum/(array.size()) );
+//        return av;
+//    }
+
     QString _name;
 
-    int _min;
-    int _max;
-    int _av;
+    Code _code;
+
+    QVariant _min;
+    QVariant _max;
+    QVariant _av;
     int _count;
 
-    int calcMin(const QVector<int> &array);
+    QColor _chartColor;
 
-    QVector<int> _array;
+    QVector<QVariant> _array;
+
+    QCPBars *bar;
+    void initHist();
+    void connectAll();
+    void setupDefaults();
 };
 
 #endif // HISTOGRAMWIDGET_H

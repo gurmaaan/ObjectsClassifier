@@ -103,21 +103,19 @@ void DataModel::addObjectRootItem(QStandardItemModel *model, const Obj &ob)
         objectRoot->setData(iconPixmap, Qt::DecorationRole);
     } else
     {
-        objectRoot->setData(QIcon(iconPixmap.scaled(50, 50, Qt::KeepAspectRatio)), Qt::DecorationRole);
+        objectRoot->setData(QIcon(iconPixmap.scaled(50, 50, Qt::KeepAspectRatioByExpanding)), Qt::DecorationRole);
     }
 
-    if (ob.getDescriptors().count() > 0)
+    for(auto descr : ob.getDescriptors())
     {
-        for(auto descr : ob.getDescriptors())
+        if (Attribute::isInt(descr->getCode()))
         {
-            if (Attribute::isInt(descr->getCode()))
-            {
-                addIntegerItem(objectRoot, descr->name(), descr->value().toInt());
-            } else {
-                addDoubleItem(objectRoot, descr->name(), descr->value().toDouble());
-            }
+            addIntegerItem(objectRoot, descr->name(), descr->value().toInt());
+        } else {
+            addDoubleItem(objectRoot, descr->name(), descr->value().toDouble());
         }
     }
+
     addPointsHeadingItem(objectRoot, ob);
 
     emit modelUpdated(model);
@@ -414,24 +412,31 @@ void DataModel::loadObjectsAttr(const QString &attrFilePath)
 
                             item->setData(itemIntVal, Qt::DisplayRole);
                             item->setData(bgClr, Qt::DecorationRole);
+                            
+                            atr.setValue(itemIntVal);
 
                         }else
                         {
                             if (Attribute::isInt(c))
                             {
                                 item->setData(itemIntVal, Qt::DisplayRole);
+                                atr.setValue(itemIntVal);
                             }
                             else
                             {
                                 item->setData(itemDoubleVal, Qt::EditRole);
                                 item->setData(itemDoubleStrRound, Qt::DisplayRole);
+                                
+                                atr.setValue(itemDoubleVal);
                             }
                         }
                         standardItemsList << item;
-
+                        pushObjectAttributeById(id, atr);
                     }
                     emit incrementAttrProgress(rowCounter);
                     _attrModel->appendRow(standardItemsList);
+                    _model->appendRow(standardItemsList);
+                    
                 }
 
             }
@@ -516,66 +521,66 @@ void DataModel::setObjectsVisible(bool state)
 //Добавить в три модель лист
 void DataModel::synchModels(bool state)
 {
-    if (state && (_attrModel->rowCount() > 1) )
-    {
-        _attrModel->sort(0, Qt::AscendingOrder);
+//    if (state && (_attrModel->rowCount() > 1) )
+//    {
+//        _attrModel->sort(0, Qt::AscendingOrder);
 
-        for(int i = 0; i < _attrModel->rowCount(); i++)
-        {
-            bool convertationStatus = false;
-            int idInAttr = _attrModel->item(i, 0)->data(Qt::EditRole).toInt(&convertationStatus);
+//        for(int i = 0; i < _attrModel->rowCount(); i++)
+//        {
+//            bool convertationStatus = false;
+//            int idInAttr = _attrModel->item(i, 0)->data(Qt::EditRole).toInt(&convertationStatus);
 
-            if ((idInAttr == i) && convertationStatus)
-            {
-                QList<QStandardItem*> attrsModelRow;
-                QStandardItem *rootTreeObj = _model->item(i, 1);
+//            if ((idInAttr == i) && convertationStatus)
+//            {
+//                QList<QStandardItem*> attrsModelRow;
+//                QStandardItem *rootTreeObj = _model->item(i, 1);
 
-                for(Code c = Code::BrRAv; c < Code::NonAssigned; c++)
-                {
-                    QStandardItem *attrInCurrentRow = new QStandardItem();
-                    //(_attrModel->columnCount() <= static_cast<int>(Code::NonAssigned)) &&
-                    if(  _objCount >= 0)
-                    {
-                        attrInCurrentRow = _attrModel->item(i, static_cast<int>(c));
-                        attrsModelRow << attrInCurrentRow;
+//                for(Code c = Code::BrRAv; c < Code::NonAssigned; c++)
+//                {
+//                    QStandardItem *attrInCurrentRow = new QStandardItem();
+//                    //(_attrModel->columnCount() <= static_cast<int>(Code::NonAssigned)) &&
+//                    if(  _objCount >= 0)
+//                    {
+//                        attrInCurrentRow = _attrModel->item(i, static_cast<int>(c));
+//                        attrsModelRow << attrInCurrentRow;
 
-                        QVariant dataFromAttr = attrInCurrentRow->data(Qt::EditRole);
-                        Attribute newAtr(c, dataFromAttr);
-                        pushObjectAttributeById(idInAttr, newAtr);
+//                        QVariant dataFromAttr = attrInCurrentRow->data(Qt::EditRole);
+//                        Attribute newAtr(c, dataFromAttr);
+//                        pushObjectAttributeById(idInAttr, newAtr);
 
-//                       //bool converted;
-//                        if (Attribute::isInt(c))
-//                        {
-//                            addIntegerItem(rootTreeObj, newAtr.name(), newAtr.value().toInt(&converted));
-//                            qDebug() << rootTreeObj->data(Qt::DisplayRole);
-////                            qDebug() << idInAttr << " : i = " << i << "; C = " << static_cast<int>(c) << "\n"
-////                                     <<  "Integer added. Root item: " << rootTreeObj->data(Qt::DisplayRole)
-////                                      << ". Status of convertation: " << converted;
-//                        }
-//                        else
-//                        {
-//                            addDoubleItem(rootTreeObj, newAtr.name(), newAtr.value().toDouble(&converted));
-////                            qDebug() << idInAttr << " : i = " << i << "; C = " << static_cast<int>(c) << "\n"
-////                                     <<  "Double added. Root item: " << rootTreeObj->data(Qt::DisplayRole)
-////                                      << ". Status of convertation: " << converted;
-//                        }
-
-
-//                        if (!converted)
-//                           // qDebug() <<  "DataModel Error"<< "Unable to convert DataModel to TreeModel";
-
-                    }// Если колонок не больше чем кодов аттрибутов
-
-                } //обошли все столбцы
-
-            } //Если таблица правильно и по порядку отсортирована
-
-            qDebug() << _objectsOnImage.at(idInAttr);
-            //addObjectRootItem(_model, _objectsOnImage.at(idInAttr));
-        } //обошли все строки
-    } //Если сигнал был эмитирован и модель не пустая
+////                       //bool converted;
+////                        if (Attribute::isInt(c))
+////                        {
+////                            addIntegerItem(rootTreeObj, newAtr.name(), newAtr.value().toInt(&converted));
+////                            qDebug() << rootTreeObj->data(Qt::DisplayRole);
+//////                            qDebug() << idInAttr << " : i = " << i << "; C = " << static_cast<int>(c) << "\n"
+//////                                     <<  "Integer added. Root item: " << rootTreeObj->data(Qt::DisplayRole)
+//////                                      << ". Status of convertation: " << converted;
+////                        }
+////                        else
+////                        {
+////                            addDoubleItem(rootTreeObj, newAtr.name(), newAtr.value().toDouble(&converted));
+//////                            qDebug() << idInAttr << " : i = " << i << "; C = " << static_cast<int>(c) << "\n"
+//////                                     <<  "Double added. Root item: " << rootTreeObj->data(Qt::DisplayRole)
+//////                                      << ". Status of convertation: " << converted;
+////                        }
 
 
+////                        if (!converted)
+////                           // qDebug() <<  "DataModel Error"<< "Unable to convert DataModel to TreeModel";
+
+//                    }// Если колонок не больше чем кодов аттрибутов
+
+//                } //обошли все столбцы
+
+//            } //Если таблица правильно и по порядку отсортирована
+
+//            emitebug() << _objectsOnImage.at(idInAttr);
+//            //addObjectRootItem(_model, _objectsOnImage.at(idInAttr));
+//        } //обошли все строки
+//    } //Если сигнал был эмитирован и модель не пустая
+
+ //`   for(auto ob : )
 }
 
 QString DataModel::imageFilePath() const
@@ -644,4 +649,19 @@ void DataModel::setImage(const QString &imagePath)
     {
         setImagePath("");
     }
+}
+
+//template<typename T>
+QVector<int> DataModel::getRangeByCode(Code code)
+{
+    QVector<int> range;
+    for(auto object : getObjectsOnImage())
+    {
+        qDebug() << object.id();
+        int rOfO = object.getDescriptors().at(static_cast<int>(code))->value().toInt();
+        range << rOfO;
+    }
+
+    qDebug() << range;
+    return range;
 }

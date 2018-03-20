@@ -54,6 +54,9 @@ public:
     void pushObjectAttributeById(int id, Attribute atr);
     void pushObjectAttributeById(int id, Code code, QVariant value);
 
+    //template<typename T>
+    QVector<int> getRangeByCode(Code code);
+
     //QStandardItemModel *getModel() const;
     void setModel(QStandardItemModel *model);
 
